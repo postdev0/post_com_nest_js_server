@@ -15,8 +15,6 @@ import { FeedModule } from './modules/feed/feed.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { InterestModule } from './modules/interest/interest.module';
 import { HashtagModule } from './modules/hashtag/hashtag.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -36,7 +34,7 @@ import { AppService } from './app.service';
     InterestModule,
     HashtagModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule { }
