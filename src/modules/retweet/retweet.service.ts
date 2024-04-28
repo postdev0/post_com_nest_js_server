@@ -4,8 +4,8 @@ import { Retweet } from "./entities/retweet.entity";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "../user/entities/user.entity";
-import { UsersList } from "src/base/interface";
 import { FollowService } from "../follow/follow.service";
+import { UsersList } from "../../base/interface";
 
 @Injectable()
 export class RetweetService {

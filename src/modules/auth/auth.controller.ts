@@ -2,8 +2,8 @@ import { Body, Controller, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { VerifyEmailDto, VerifyOtpDto, LoginDto, SSOLoginDto, NewAccessTokenDto, ForgotPasswordDto, ForgotPasswordVerifyEmailDto } from './dto/create.dto';
 import { Response } from 'express';
-import { errorResponse, successResponse } from 'src/base/response';
-import { RoutesConstants } from 'src/constants/routes.constant';
+import { RoutesConstants } from '../../constants/routes.constant';
+import { errorResponse, successResponse } from '../../base/response';
 
 @Controller(RoutesConstants.AUTH)
 export class AuthController {

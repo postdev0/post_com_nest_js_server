@@ -5,12 +5,12 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
-import { otpGenerator } from 'src/common/generator';
 import { VerifyEmailDto, VerifyOtpDto, LoginDto, SSOLoginDto, NewAccessTokenDto, ForgotPasswordDto, ForgotPasswordVerifyEmailDto } from './dto/create.dto';
 import * as bcrypt from 'bcryptjs';
-import { extractUsername } from 'src/common/common';
 import { Blacklist } from './entities/blacklist.entity';
-import { UserAuthData } from 'src/base/interface';
+import { otpGenerator } from '../../common/generator';
+import { UserAuthData } from '../../base/interface';
+import { extractUsername } from '../../common/common';
 
 @Injectable()
 export class AuthService {

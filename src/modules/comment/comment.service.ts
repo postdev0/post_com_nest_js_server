@@ -6,7 +6,7 @@ import { UpdateCommentDto } from './dto/update.dto';
 import { Comment } from './entities/comment.entity';
 import { S3Service } from '../s3/s3.service';
 import { Tweet } from '../tweet/entities/tweet.entity';
-import { CommentsList } from 'src/base/interface';
+import { CommentsList } from '../../base/interface';
 
 @Injectable()
 export class CommentService {

@@ -2,8 +2,8 @@ import { ILike, Repository } from "typeorm";
 import { User } from "../user/entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
-import { UsersList } from "src/base/interface";
 import { FollowService } from "../follow/follow.service";
+import { UsersList } from "../../base/interface";
 
 @Injectable()
 export class FeedService {

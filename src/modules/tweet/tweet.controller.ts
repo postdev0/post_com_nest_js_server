@@ -3,8 +3,8 @@ import { Request, Response } from "express";
 import { RoutesConstants } from "src/constants/routes.constant";
 import { TweetService } from "./tweet.service";
 import { JwtAuthGuard } from "../auth/jwt.auth.guard";
-import { errorResponse, successPaginatedResponse, successPaginatedResponseWithoutDB, successResponse, successResponseForHome } from "src/base/response";
 import { FilesInterceptor } from "@nestjs/platform-express";
+import { errorResponse, successPaginatedResponse, successPaginatedResponseWithoutDB, successResponse, successResponseForHome } from "../../base/response";
 
 @Controller(RoutesConstants.TWEET)
 export class TweetController {

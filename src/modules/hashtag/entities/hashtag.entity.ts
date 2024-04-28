@@ -1,5 +1,5 @@
-import { Tweet } from "src/modules/tweet/entities/tweet.entity";
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Tweet } from "../../tweet/entities/tweet.entity";
 
 @Entity()
 export class Hashtag {

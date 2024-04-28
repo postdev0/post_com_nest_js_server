@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { Controller, Post, Body, Get, Param, Req, Res, UseGuards, Query, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Req, Res, UseGuards, Query, Delete } from '@nestjs/common';
 import { InterestService } from './interest.service';
-import { errorResponse, successPaginatedResponse, successPaginatedResponseWithoutDB, successResponse } from 'src/base/response';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
-import { RoutesConstants } from 'src/constants/routes.constant';
+import { RoutesConstants } from '../../constants/routes.constant';
+import { errorResponse, successPaginatedResponse, successPaginatedResponseWithoutDB, successResponse } from '../../base/response';
 
 @Controller('interests')
 export class InterestController {

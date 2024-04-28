@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { errorResponse, successPaginatedResponse, successResponse } from 'src/base/response';
 import { Request, Response } from 'express'
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
-import { RoutesConstants } from 'src/constants/routes.constant';
 import { ChangePasswordDto, PasswordDto, UsernameDto } from './dto/update.dto';
+import { RoutesConstants } from '../../constants/routes.constant';
+import { errorResponse, successPaginatedResponse, successResponse } from '../../base/response';
 
 @Controller(RoutesConstants.USER)
 export class UserController {

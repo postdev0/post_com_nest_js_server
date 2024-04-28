@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { HashtagService } from "./hashtag.service";
-import { errorResponse, successPaginatedResponse, successPaginatedResponseWithoutDB, successResponse } from "src/base/response";
 import { Request, Response } from "express";
 import { JwtAuthGuard } from "../auth/jwt.auth.guard";
-import { RoutesConstants } from "src/constants/routes.constant";
+import { RoutesConstants } from "../../constants/routes.constant";
+import { errorResponse, successPaginatedResponse, successPaginatedResponseWithoutDB, successResponse } from "../../base/response";
 
 @Controller('hashtags')
 export class HashtagController {

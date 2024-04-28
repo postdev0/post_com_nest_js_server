@@ -3,11 +3,11 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Hashtag } from "./entities/hashtag.entity";
 import { ILike, Repository } from "typeorm";
 import { Tweet } from "../tweet/entities/tweet.entity";
-import { TweetsList } from "src/base/interface";
 import { LikeService } from "../like/like.service";
 import { RetweetService } from "../retweet/retweet.service";
 import { BookmarkService } from "../bookmark/bookmark.service";
 import { CommentService } from "../comment/comment.service";
+import { TweetsList } from "../../base/interface";
 
 @Injectable()
 export class HashtagService {

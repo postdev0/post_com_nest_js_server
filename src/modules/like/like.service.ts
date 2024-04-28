@@ -4,8 +4,8 @@ import { Repository } from "typeorm";
 import { Tweet } from "../tweet/entities/tweet.entity";
 import { Like } from "./entities/like.entity";
 import { User } from "../user/entities/user.entity";
-import { UsersList } from "src/base/interface";
 import { FollowService } from "../follow/follow.service";
+import { UsersList } from "../../base/interface";
 
 @Injectable()
 export class LikeService {

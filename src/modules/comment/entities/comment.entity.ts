@@ -1,7 +1,7 @@
-import { BaseEntity } from "src/base/base.entity";
-import { Tweet } from "src/modules/tweet/entities/tweet.entity";
-import { User } from "src/modules/user/entities/user.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity } from "../../../base/base.entity";
+import { User } from "../../user/entities/user.entity";
+import { Tweet } from "../../tweet/entities/tweet.entity";
 
 @Entity()
 export class Comment extends BaseEntity {

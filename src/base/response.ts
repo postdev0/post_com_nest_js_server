@@ -1,6 +1,7 @@
 import { Response } from "express";
-import { ErrorConstants } from "src/constants/error.constant";
-import { SuccessConstants } from "src/constants/success.constant";
+import { SuccessConstants } from "../constants/success.constant";
+import { ErrorConstants } from "../constants/error.constant";
+
 
 export const successResponse = (response: Response, data: any, code?: number, message?: string) => {
     response.status(code || SuccessConstants.SUCCESSFULL).json({

@@ -1,12 +1,12 @@
-import { BaseEntity } from 'src/base/base.entity';
-import { Bookmark } from 'src/modules/bookmark/entities/bookmark.entity';
-import { Comment } from 'src/modules/comment/entities/comment.entity';
-import { Hashtag } from 'src/modules/hashtag/entities/hashtag.entity';
-import { Interest } from 'src/modules/interest/entities/interest.entity';
-import { Like } from 'src/modules/like/entities/like.entity';
-import { Retweet } from 'src/modules/retweet/entities/retweet.entity';
-import { User } from 'src/modules/user/entities/user.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { BaseEntity } from '../../../base/base.entity';
+import { User } from '../../user/entities/user.entity';
+import { Like } from '../../like/entities/like.entity';
+import { Retweet } from '../../retweet/entities/retweet.entity';
+import { Comment } from '../../comment/entities/comment.entity';
+import { Bookmark } from '../../bookmark/entities/bookmark.entity';
+import { Hashtag } from '../../hashtag/entities/hashtag.entity';
+import { Interest } from '../../interest/entities/interest.entity';
 
 @Entity()
 export class Tweet extends BaseEntity {

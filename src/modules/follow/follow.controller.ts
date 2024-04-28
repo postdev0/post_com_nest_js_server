@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Delete, Param, Req, Res, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Param, Req, Res, Query, UseGuards } from '@nestjs/common';
 import { FollowService } from './follow.service';
 import { Request, Response } from 'express';
-import { errorResponse, successPaginatedResponse, successResponse } from 'src/base/response';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
-import { RoutesConstants } from 'src/constants/routes.constant';
+import { errorResponse, successPaginatedResponse, successResponse } from '../../base/response';
+import { RoutesConstants } from '../../constants/routes.constant';
 
 @Controller('follow')
 export class FollowController {

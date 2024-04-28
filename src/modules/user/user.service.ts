@@ -11,10 +11,10 @@ import { Like } from '../like/entities/like.entity';
 import { Retweet } from '../retweet/entities/retweet.entity';
 import { BookmarkService } from '../bookmark/bookmark.service';
 import { Bookmark } from '../bookmark/entities/bookmark.entity';
-import { TweetsList, UserCommentedTweetsList, UserData } from 'src/base/interface';
 import { Comment } from '../comment/entities/comment.entity';
 import { CommentService } from '../comment/comment.service';
 import { Tweet } from '../tweet/entities/tweet.entity';
+import { TweetsList, UserCommentedTweetsList, UserData } from '../../base/interface';
 
 @Injectable()
 export class UserService {

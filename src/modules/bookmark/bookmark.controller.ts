@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { BookmarkService } from "./bookmark.service";
 import { JwtAuthGuard } from "../auth/jwt.auth.guard";
-import { errorResponse, successPaginatedResponse, successResponse } from "src/base/response";
 import { Request, Response } from "express";
-import { RoutesConstants } from "src/constants/routes.constant";
+import { errorResponse, successPaginatedResponse, successResponse } from "../../base/response";
+import { RoutesConstants } from "../../constants/routes.constant";
 
 @Controller('bookmarks')
 export class BookmarkController {

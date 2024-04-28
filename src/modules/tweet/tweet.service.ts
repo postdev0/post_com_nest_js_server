@@ -2,16 +2,15 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Tweet } from "./entities/tweet.entity";
 import { In, Repository } from "typeorm";
-import { getUpdateObjectByAction } from "src/common/action-update";
 import { LikeService } from "../like/like.service";
 import { RetweetService } from "../retweet/retweet.service";
 import { S3Service } from "../s3/s3.service";
 import { BookmarkService } from "../bookmark/bookmark.service";
-import { TweetsList } from "src/base/interface";
 import { User } from "../user/entities/user.entity";
 import { CommentService } from "../comment/comment.service";
-import { String } from "aws-sdk/clients/codebuild";
 import { Follow } from "../follow/entities/follow.entity";
+import { TweetsList } from "../../base/interface";
+import { getUpdateObjectByAction } from "../../common/action-update";
 
 @Injectable()
 export class TweetService {
@@ -144,7 +143,7 @@ export class TweetService {
         return await this.tweetRepository.update(id, getUpdateObjectByAction(action));
     }
 
-    async getTweetsByUserInterests(userId: String): Promise<TweetsList[]> {
+    async getTweetsByUserInterests(userId: string): Promise<TweetsList[]> {
         let user: any = await this.userRepository.findOne({
             where: { id: userId, deleteFlag: false },
             relations: ['interests', 'interests.tweets', 'interests.tweets.user', 'interests.tweets.interests', 'interests.tweets.hashtags']
@@ -185,7 +184,7 @@ export class TweetService {
         });
     }
 
-    async getTweetsOfFollowers(selfId: String, page: number = 1, pageSize: number = 10): Promise<any> {
+    async getTweetsOfFollowers(selfId: string, page: number = 1, pageSize: number = 10): Promise<any> {
         let followers = await this.followRepository.find({
             where: { follower: { id: selfId } },
             relations: ['following']

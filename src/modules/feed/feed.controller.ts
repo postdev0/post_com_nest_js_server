@@ -1,9 +1,9 @@
 import { Controller, Get, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { FeedService } from "./feed.service";
 import { Request, Response } from "express";
-import { errorResponse, successPaginatedResponse, successResponse } from "src/base/response";
 import { JwtAuthGuard } from "../auth/jwt.auth.guard";
-import { RoutesConstants } from "src/constants/routes.constant";
+import { RoutesConstants } from "../../constants/routes.constant";
+import { errorResponse, successPaginatedResponse } from "../../base/response";
 
 @Controller('feed')
 export class FeedController {

@@ -1,15 +1,15 @@
 import { DataSourceOptions } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { User } from 'src/modules/user/entities/user.entity';
-import { Blacklist } from 'src/modules/auth/entities/blacklist.entity';
-import { Tweet } from 'src/modules/tweet/entities/tweet.entity';
-import { Like } from 'src/modules/like/entities/like.entity';
-import { Retweet } from 'src/modules/retweet/entities/retweet.entity';
-import { Comment } from 'src/modules/comment/entities/comment.entity';
-import { Bookmark } from 'src/modules/bookmark/entities/bookmark.entity';
-import { Follow } from 'src/modules/follow/entities/follow.entity';
-import { Hashtag } from 'src/modules/hashtag/entities/hashtag.entity';
-import { Interest } from 'src/modules/interest/entities/interest.entity';
+import { User } from '../modules/user/entities/user.entity';
+import { Blacklist } from '../modules/auth/entities/blacklist.entity';
+import { Tweet } from '../modules/tweet/entities/tweet.entity';
+import { Like } from '../modules/like/entities/like.entity';
+import { Retweet } from '../modules/retweet/entities/retweet.entity';
+import { Comment } from '../modules/comment/entities/comment.entity';
+import { Bookmark } from '../modules/bookmark/entities/bookmark.entity';
+import { Follow } from '../modules/follow/entities/follow.entity';
+import { Hashtag } from '../modules/hashtag/entities/hashtag.entity';
+import { Interest } from '../modules/interest/entities/interest.entity';
 
 ConfigModule.forRoot();
 

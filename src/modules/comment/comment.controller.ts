@@ -5,8 +5,8 @@ import { UpdateCommentDto } from './dto/update.dto';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { errorResponse, successPaginatedResponse, successResponse } from 'src/base/response';
 import { RoutesConstants } from 'src/constants/routes.constant';
+import { errorResponse, successPaginatedResponse, successResponse } from '../../base/response';
 
 @Controller('comments')
 export class CommentController {

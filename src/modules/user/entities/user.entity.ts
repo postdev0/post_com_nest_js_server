@@ -1,12 +1,12 @@
-import { BaseEntity } from 'src/base/base.entity';
-import { ROLES } from 'src/enums/role.enum';
-import { Bookmark } from 'src/modules/bookmark/entities/bookmark.entity';
-import { Comment } from 'src/modules/comment/entities/comment.entity';
-import { Interest } from 'src/modules/interest/entities/interest.entity';
-import { Like } from 'src/modules/like/entities/like.entity';
-import { Retweet } from 'src/modules/retweet/entities/retweet.entity';
-import { Tweet } from 'src/modules/tweet/entities/tweet.entity';
+import { BaseEntity } from '../../../base/base.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinColumn, JoinTable } from 'typeorm';
+import { Tweet } from '../../tweet/entities/tweet.entity';
+import { Like } from '../../like/entities/like.entity';
+import { Retweet } from '../../retweet/entities/retweet.entity';
+import { Comment } from '../../comment/entities/comment.entity';
+import { Bookmark } from '../../bookmark/entities/bookmark.entity';
+import { Interest } from '../../interest/entities/interest.entity';
+import { ROLES } from '../../../enums/role.enum';
 
 @Entity()
 export class User extends BaseEntity {

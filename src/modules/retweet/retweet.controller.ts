@@ -2,8 +2,8 @@ import { Body, Controller, Get, Param, Post, Query, Req, Res, UseGuards } from "
 import { RetweetService } from "./retweet.service";
 import { JwtAuthGuard } from "../auth/jwt.auth.guard";
 import { Request, Response } from "express";
-import { errorResponse, successPaginatedResponse, successResponse } from "src/base/response";
-import { RoutesConstants } from "src/constants/routes.constant";
+import { errorResponse, successPaginatedResponse, successResponse } from "../../base/response";
+import { RoutesConstants } from "../../constants/routes.constant";
 
 @Controller('retweets')
 export class RetweetController {
