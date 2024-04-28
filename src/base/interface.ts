@@ -36,7 +36,6 @@ export interface UserData {
     status: string;
     verified: boolean;
     ssoLogin: boolean;
-    isNewUser: boolean;
     followerCount: number;
     followingCount: number;
     postCount: number;

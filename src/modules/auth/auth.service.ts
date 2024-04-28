@@ -91,7 +91,7 @@ export class AuthService {
     delete userDetails.activeFlag;
     delete userDetails.deleteFlag;
     userDetails.interests = [];
-    return { ...userDetails, accessToken, refreshToken };
+    return { ...userDetails, accessToken, refreshToken, isNewUser: true };
   }
 
   async login(loginDto: LoginDto): Promise<UserAuthData> {
@@ -112,7 +112,7 @@ export class AuthService {
     delete userDetails.password;
     delete userDetails.activeFlag;
     delete userDetails.deleteFlag;
-    return { ...userDetails, accessToken, refreshToken };
+    return { ...userDetails, accessToken, refreshToken, isNewUser: false };
   }
 
   async ssoLogin(ssoLoginDto: SSOLoginDto): Promise<UserAuthData> {
@@ -123,7 +123,7 @@ export class AuthService {
       delete existingUser.password;
       delete existingUser.activeFlag;
       delete existingUser.deleteFlag;
-      return { ...existingUser, accessToken, refreshToken };
+      return { ...existingUser, accessToken, refreshToken, isNewUser: false };
     } else {
       let user: any = {
         email: ssoLoginDto.email,
@@ -138,7 +138,7 @@ export class AuthService {
       delete userDetails.password;
       delete userDetails.activeFlag;
       delete userDetails.deleteFlag;
-      return { ...userDetails, accessToken, refreshToken };
+      return { ...userDetails, accessToken, refreshToken, isNewUser: true };
     }
   }
 

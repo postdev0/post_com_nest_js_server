@@ -47,7 +47,7 @@ export class AuthController {
         }
     }
 
-    @Post(RoutesConstants.SSO_LOGIN)
+    @Post(RoutesConstants.NEW_ACCESS_TOKEN)
     async newAccessToken(@Res() response: Response, @Body() newAccessTokenDto: NewAccessTokenDto): Promise<void> {
         try {
             successResponse(response, await this.authService.newAccessToken(newAccessTokenDto));

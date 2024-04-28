@@ -49,9 +49,6 @@ export class User extends BaseEntity {
     @Column('boolean', { default: false })
     ssoLogin: boolean;
 
-    @Column('boolean', { default: true })
-    isNewUser: boolean;
-
     @Column({ default: 0 })
     followerCount: number;
 

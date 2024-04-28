@@ -59,7 +59,7 @@ export class HashtagService {
             }
             return { message: "Tweet already have that hashtag" };
         }
-        const hashtag = this.hashtagRepository.create({ name });
+        const hashtag = this.hashtagRepository.create({ name, postCount: 0 });
         hashtag.tweets = [tweet];
         hashtag.postCount++;
         return await this.hashtagRepository.save(hashtag);

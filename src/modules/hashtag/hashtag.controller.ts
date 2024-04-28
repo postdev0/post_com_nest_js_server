@@ -26,7 +26,7 @@ export class HashtagController {
 
     @Post('tweet')
     @UseGuards(JwtAuthGuard)
-    async createInterestByTweet(
+    async createHashtagByTweet(
         @Req() request: Request,
         @Res() response: Response,
         @Body() nameDto: any,
@@ -36,6 +36,7 @@ export class HashtagController {
             let result = await this.hashtagService.createMultipleHashtagsByTweet(nameDto.hashtags, tweetId)
             successResponse(response, result);
         } catch (error: any) {
+            console.log(error)
             errorResponse(response, error.message);
         }
     }

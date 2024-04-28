@@ -11,6 +11,7 @@ import { CommentService } from "../comment/comment.service";
 import { Follow } from "../follow/entities/follow.entity";
 import { TweetsList } from "../../base/interface";
 import { getUpdateObjectByAction } from "../../common/action-update";
+import { extractTaggedUsers } from "../../common/common";
 
 @Injectable()
 export class TweetService {
@@ -26,6 +27,7 @@ export class TweetService {
     ) { }
 
     async create(dto: any, user: any, media?: any[]): Promise<any> {
+        let taggedUsers = extractTaggedUsers(dto.text);
         let tweetMedia: any[] = [];
         if (media) {
             await Promise.all(media.map(async m => {
@@ -33,9 +35,11 @@ export class TweetService {
                 tweetMedia.push(fileURL);
             }));
         }
-        let newTweet: any = this.tweetRepository.create({ media: tweetMedia, ...dto });
+        let newTweet: any = this.tweetRepository.create({ media: tweetMedia, taggedUsers, ...dto });
+        for (let user of taggedUsers) {
+            // TODO notify each user about tags
+        }
         newTweet.user = user;
-        newTweet.createdUserId = user.id;
         let userDetails = await this.userRepository.findOneBy({ id: user.id });
         userDetails.postCount++;
         await this.userRepository.save(userDetails);
