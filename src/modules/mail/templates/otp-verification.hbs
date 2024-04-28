@@ -1,0 +1,60 @@
+{{!-- <p>Below is the OTP for verficiation</p>
+<p style='color: red; font-weight: bold; font-size: large; '>
+  {{otp}}
+</p>
+
+<p>It will expires in 10 min. Don't share it with anyone</p> --}}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Verification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .otp {
+      font-size: 36px;
+      font-weight: bold;
+      text-align: center;
+      color: #4CAF50;
+      padding: 20px 0;
+      border-bottom: 2px solid #eee;
+      margin-bottom: 20px;
+    }
+    .expire {
+      text-align: center;
+      color: #999;
+      margin-bottom: 30px;
+    }
+    .warning {
+      text-align: center;
+      color: #f44336;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>OTP Verification</h2>
+  <div class="otp">{{otp}}</div>
+  <div class="expire">Expires in 10 minutes. Don't share it with anyone.</div>
+  <div class="warning">For security purposes, never share your OTP with anyone, including company representatives.</div>
+</div>
+
+</body>
+</html>
