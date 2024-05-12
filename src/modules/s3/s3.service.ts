@@ -1,11 +1,15 @@
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Credentials, S3 } from "aws-sdk";
 import { v4 as uuidv4 } from 'uuid';
+import { User } from "../user/entities/user.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class S3Service {
     constructor(
+        @InjectRepository(User) private readonly userRepository: Repository<User>,
     ) { }
     bucketName = process.env.S3_BUCKET_NAME;
     s3 = new S3Client({
@@ -30,13 +34,9 @@ export class S3Service {
         await this.s3.send(command);
         let fileURL = `https://s3.${process.env.S3_REGION}.amazonaws.com/${process.env.S3_BUCKET_NAME}/${folderPath}${uniqueFilename}`;
         if (id) {
-            //   await this.userModel.findByIdAndUpdate(
-            //     id,
-            //     { profileImage: imageURL },
-            //     { new: true },
-            //   );
+            await this.userRepository.update(id, { avatar: fileURL })
         }
-        return { uniqueFilename, fileURL };
+        return { fileURL, message: "Profile image uploaded successfuly" };
     }
 
     async deleteImageS3(uniqueFilename: string, id?: string) {
@@ -47,12 +47,8 @@ export class S3Service {
         });
         await this.s3.send(command);
         if (id) {
-            //   await this.userModel.findByIdAndUpdate(
-            //     id,
-            //     { profileImage: null },
-            //     { new: true },
-            //   );
+            await this.userRepository.update(id, { avatar: "https://res.cloudinary.com/twitter-clone-media/image/upload/v1597737557/user_wt3nrc.png" })
         }
-        return { message: "Deleted successfully" };
+        return { message: "Profile image deleted successfully" };
     }
 }
