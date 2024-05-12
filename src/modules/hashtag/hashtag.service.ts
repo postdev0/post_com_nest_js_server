@@ -113,7 +113,7 @@ export class HashtagService {
     async getAllTweetsByHashtag(name: string, selfId: string): Promise<TweetsList[]> {
         let hashtags = await this.hashtagRepository.find({
             where: { name: name.toLowerCase() },
-            relations: ['tweets', 'tweets.interests', 'tweets.hashtags']
+            relations: ['tweets', 'tweets.user', 'tweets.interests', 'tweets.hashtags']
         });
 
         let result = await Promise.all(hashtags.map(async hashtag => {
@@ -135,10 +135,10 @@ export class HashtagService {
                 selfRetweeted: await this.retweetService.isTweetRetweetedByUser(tweet, selfId),
                 selfBookmarked: await this.bookmarkService.isTweetBookmarkedByUser(tweet, selfId),
                 selfCommented: await this.commentService.isTweetCommentedByUser(tweet, selfId),
-                userId: tweet.userId,
-                username: tweet.username,
-                fullName: tweet.fullName,
-                avatar: tweet.avatar,
+                userId: tweet.user.userId,
+                username: tweet.user.username,
+                fullName: tweet.user.fullName,
+                avatar: tweet.user.avatar,
                 createdAt: tweet.createdAt,
                 modifiedAt: tweet.modifiedAt
             })));
