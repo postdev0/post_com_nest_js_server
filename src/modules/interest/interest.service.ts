@@ -164,7 +164,7 @@ export class InterestService {
     async searchInterestByNameWithTweets(name: string, selfId: string): Promise<TweetsList[]> {
         let interests = await this.interestRepository.find({
             where: { name: ILike(`%${name.toLowerCase()}%`) },
-            relations: ['tweets', 'tweets.interests', 'tweets.hashtags']
+            relations: ['tweets', 'tweets.user', 'tweets.interests', 'tweets.hashtags']
         });
 
         let result = await Promise.all(interests.map(async interest => {
@@ -186,10 +186,10 @@ export class InterestService {
                 selfRetweeted: await this.retweetService.isTweetRetweetedByUser(tweet, selfId),
                 selfBookmarked: await this.bookmarkService.isTweetBookmarkedByUser(tweet, selfId),
                 selfCommented: await this.commentService.isTweetCommentedByUser(tweet, selfId),
-                userId: tweet.userId,
-                username: tweet.username,
-                fullName: tweet.fullName,
-                avatar: tweet.avatar,
+                userId: tweet.user.id,
+                username: tweet.user.username,
+                fullName: tweet.user.fullName,
+                avatar: tweet.user.avatar,
                 createdAt: tweet.createdAt,
                 modifiedAt: tweet.modifiedAt
             })));

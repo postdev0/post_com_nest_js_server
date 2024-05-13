@@ -135,7 +135,7 @@ export class HashtagService {
                 selfRetweeted: await this.retweetService.isTweetRetweetedByUser(tweet, selfId),
                 selfBookmarked: await this.bookmarkService.isTweetBookmarkedByUser(tweet, selfId),
                 selfCommented: await this.commentService.isTweetCommentedByUser(tweet, selfId),
-                userId: tweet.user.userId,
+                userId: tweet.user.id,
                 username: tweet.user.username,
                 fullName: tweet.user.fullName,
                 avatar: tweet.user.avatar,
