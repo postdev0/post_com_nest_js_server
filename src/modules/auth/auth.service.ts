@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { VerifyEmailDto, VerifyOtpDto, LoginDto, SSOLoginDto, NewAccessTokenDto, ForgotPasswordDto, ForgotPasswordVerifyEmailDto } from './dto/create.dto';
 import * as bcrypt from 'bcryptjs';
 import { Blacklist } from './entities/blacklist.entity';
-import { otpGenerator } from '../../common/generator';
+import { otpGenerator, sixDigitGenerator } from '../../common/generator';
 import { UserAuthData } from '../../base/interface';
 import { extractUsername } from '../../common/common';
 
@@ -125,10 +125,13 @@ export class AuthService {
       delete existingUser.deleteFlag;
       return { ...existingUser, accessToken, refreshToken, isNewUser: false };
     } else {
+      let username = extractUsername(ssoLoginDto.email);
+      let userWithUsername = await this.userRepository.findOne({ where: { username, deleteFlag: false } });
+      username = userWithUsername ? `${username}${sixDigitGenerator()}` : username;
       let user: any = {
         email: ssoLoginDto.email,
         fullName: ssoLoginDto.fullName,
-        username: extractUsername(ssoLoginDto.email),
+        username,
         avatar: ssoLoginDto.picture,
         ssoLogin: true
       }

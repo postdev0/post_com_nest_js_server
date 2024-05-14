@@ -114,10 +114,15 @@ export class UserService {
         return await this.userRepository.update(id, { password });
     }
 
-    async checkUsername(usernameDto: UsernameDto) {
+    async checkUsername(usernameDto: UsernameDto, selfId: string) {
         if (!usernameDto.username) return false;
+        let userDetails = await this.userRepository.findOne({ where: { id: selfId, deleteFlag: false } });
         let username = await this.userRepository.findOne({ where: { username: usernameDto.username, deleteFlag: false } });
-        return username ? false : true;
+        if (username) {
+            return userDetails.username === username.username ? true : false;
+        } else {
+            return true;
+        }
     }
 
     async changePassword(id: string, changePasswordDto: ChangePasswordDto) {

@@ -100,7 +100,7 @@ export class UserController {
         @Body() usernameDto: UsernameDto
     ): Promise<void> {
         try {
-            let result = await this.userService.checkUsername(usernameDto);
+            let result = await this.userService.checkUsername(usernameDto,(request.user as any).id);
             successResponse(response, result);
         } catch (error: any) {
             errorResponse(response, error.message);
