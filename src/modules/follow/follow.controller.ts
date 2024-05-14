@@ -36,7 +36,7 @@ export class FollowController {
         @Query(RoutesConstants.PAGESIZE) pageSize: number = 10
     ): Promise<void> {
         try {
-            let { result, count } = await this.followService.getFollowers(id || (request.user as any).id, page, pageSize);
+            let { result, count } = await this.followService.getFollowers(id || (request.user as any).id, (request.user as any).id, page, pageSize);
             successPaginatedResponse(response, result, count, page, pageSize);
         } catch (error: any) {
             errorResponse(response, error.message);
@@ -53,7 +53,7 @@ export class FollowController {
         @Query(RoutesConstants.PAGESIZE) pageSize: number = 10
     ): Promise<void> {
         try {
-            let { result, count } = await this.followService.getFollowings(id || (request.user as any).id, page, pageSize);
+            let { result, count } = await this.followService.getFollowings(id || (request.user as any).id, (request.user as any).id, page, pageSize);
             successPaginatedResponse(response, result, count, page, pageSize);
         } catch (error: any) {
             errorResponse(response, error.message);

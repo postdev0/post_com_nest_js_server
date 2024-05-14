@@ -31,4 +31,27 @@ export class S3Controller {
       errorResponse(response, error.message);
     }
   }
+
+  @Post('cover')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('cover'))
+  async uploadCover(@Req() request: Request, @Res() response: Response, @UploadedFile() file: Express.Multer.File): Promise<void> {
+    try {
+      console.log({ file })
+      successResponse(response, await this.s3Service.uploadCoverS3(file, (request.user as any).id));
+
+    } catch (error) {
+      errorResponse(response, error.message);
+    }
+  }
+
+  @Delete('cover/:uniqueFilename')
+  @UseGuards(JwtAuthGuard)
+  async deleteCover(@Req() request: Request, @Res() response: Response, @Param('uniqueFilename') uniqueFilename: string): Promise<void> {
+    try {
+      successResponse(response, await this.s3Service.deleteCoverS3(uniqueFilename, (request.user as any).id));
+    } catch (error) {
+      errorResponse(response, error.message);
+    }
+  }
 }

@@ -21,6 +21,7 @@ export class FeedService {
         let result: UsersList[] = await Promise.all(users.map(async (u: any) => {
             if (u.id !== selfId) {
                 let isFollowing = await this.followService.isMyFollowing(u.id, selfId);
+                let isFollower = await this.followService.isMyFollower(u.id, selfId);
                 return {
                     id: u.id,
                     username: u.username,
@@ -28,6 +29,7 @@ export class FeedService {
                     avatar: u.avatar,
                     verified: u.verified,
                     isFollowing,
+                    isFollower,
                 };
             }
         })).then(result => result.filter(Boolean));
@@ -45,6 +47,7 @@ export class FeedService {
         let result: UsersList[] = await Promise.all(users.map(async (u: any) => {
             if (u.id !== selfId) {
                 let isFollowing = await this.followService.isMyFollowing(u.id, selfId);
+                let isFollower = await this.followService.isMyFollower(u.id, selfId);
                 return {
                     id: u.id,
                     username: u.username,
@@ -52,6 +55,7 @@ export class FeedService {
                     avatar: u.avatar,
                     verified: u.verified,
                     isFollowing,
+                    isFollower,
                 };
             }
         })).then(result => result.filter(Boolean));

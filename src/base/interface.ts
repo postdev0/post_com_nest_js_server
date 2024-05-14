@@ -51,6 +51,7 @@ export interface UsersList {
     avatar: string;
     verified: boolean;
     isFollowing: boolean;
+    isFollower: boolean;
 }
 
 export interface TweetsList {

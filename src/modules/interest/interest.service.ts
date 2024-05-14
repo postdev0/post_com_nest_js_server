@@ -28,7 +28,6 @@ export class InterestService {
         const skip = (page - 1) * pageSize;
         const [interests, total] = await this.interestRepository.findAndCount({
             where: {},
-            relations: ['users', 'tweets'],
             skip,
             take: pageSize,
         });
@@ -95,10 +94,12 @@ export class InterestService {
         return await this.interestRepository.save(interest);
     }
 
-    async searchInterestByNameOnlyInterest(name: string): Promise<Interest[]> {
-        return await this.interestRepository.find({
+    async searchInterestByNameOnlyInterest(name: string): Promise<any> {
+        let [result, count] =  await this.interestRepository.findAndCount({
             where: { name: ILike(`%${name.toLowerCase()}%`) }
         });
+
+        return { result, count };
 
     }
 
@@ -114,6 +115,7 @@ export class InterestService {
             const usersList = await Promise.all(interest.users.map(async user => {
                 if (user.id !== selfId) {
                     let isFollowing = await this.followService.isMyFollowing(user.id, selfId);
+                    let isFollower = await this.followService.isMyFollower(user.id, selfId);
                     return {
                         id: user.id,
                         username: user.username,
@@ -121,6 +123,7 @@ export class InterestService {
                         avatar: user.avatar,
                         verified: user.verified,
                         isFollowing,
+                        isFollower,
                     }
                 }
             })).then(result => result.filter(Boolean));

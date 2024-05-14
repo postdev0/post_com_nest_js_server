@@ -36,7 +36,7 @@ export class UserController {
         @Query(RoutesConstants.ID
         ) id: string): Promise<void> {
         try {
-            let result = await this.userService.getById(id || (request.user as any).id)
+            let result = await this.userService.getById(id || (request.user as any).id, (request.user as any).id)
             successResponse(response, result);
         } catch (error: any) {
             errorResponse(response, error.message);
@@ -95,6 +95,7 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Post(RoutesConstants.CHECK_USERNAME)
     async checkUsername(
+        @Req() request: Request,
         @Res() response: Response,
         @Body() usernameDto: UsernameDto
     ): Promise<void> {
@@ -158,8 +159,8 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Get(RoutesConstants.GET_USER_RETWEETED_TWEETS)
     async getAllTweetsRetweetedByUser(
-        @Req() request: Request, 
-        @Res() response: Response, 
+        @Req() request: Request,
+        @Res() response: Response,
         @Query(RoutesConstants.ID) id: string,
         @Query(RoutesConstants.PAGE) page: number = 1,
         @Query(RoutesConstants.PAGESIZE) pageSize: number = 10
@@ -175,8 +176,8 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Get(RoutesConstants.GET_USER_BOOKMARKED_TWEETS)
     async getAllTweetsBookmarkedByUser(
-        @Req() request: Request, 
-        @Res() response: Response, 
+        @Req() request: Request,
+        @Res() response: Response,
         @Query(RoutesConstants.ID) id: string,
         @Query(RoutesConstants.PAGE) page: number = 1,
         @Query(RoutesConstants.PAGESIZE) pageSize: number = 10
@@ -193,8 +194,8 @@ export class UserController {
     @Get(RoutesConstants.GET_USER_COMMENTED_TWEETS)
     @UseGuards(JwtAuthGuard)
     async findByUser(
-        @Req() request: Request, 
-        @Res() response: Response, 
+        @Req() request: Request,
+        @Res() response: Response,
         @Query(RoutesConstants.ID) id: string,
         @Query(RoutesConstants.PAGE) page: number = 1,
         @Query(RoutesConstants.PAGESIZE) pageSize: number = 10

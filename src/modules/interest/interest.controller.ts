@@ -124,11 +124,13 @@ export class InterestController {
     async searchInterestByNameOnlyInterest(
         @Req() request: Request,
         @Res() response: Response,
-        @Query('name') name: string
+        @Query('name') name: string,
+        @Query(RoutesConstants.PAGE) page: number = 1,
+        @Query(RoutesConstants.PAGESIZE) pageSize: number = 10
     ): Promise<void> {
         try {
-            let result = await this.interestService.searchInterestByNameOnlyInterest(name)
-            successResponse(response, result);
+            let { result, count } = await this.interestService.searchInterestByNameOnlyInterest(name)
+            successPaginatedResponse(response, result, count, page, pageSize);
         } catch (error: any) {
             errorResponse(response, error.message);
         }

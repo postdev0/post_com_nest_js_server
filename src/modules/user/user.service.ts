@@ -15,6 +15,7 @@ import { Comment } from '../comment/entities/comment.entity';
 import { CommentService } from '../comment/comment.service';
 import { Tweet } from '../tweet/entities/tweet.entity';
 import { TweetsList, UserCommentedTweetsList, UserData } from '../../base/interface';
+import { FollowService } from '../follow/follow.service';
 
 @Injectable()
 export class UserService {
@@ -29,6 +30,7 @@ export class UserService {
         private readonly retweetService: RetweetService,
         private readonly bookmarkService: BookmarkService,
         private readonly commentService: CommentService,
+        private readonly followService: FollowService,
     ) { }
 
     async getAll(page: number = 1, pageSize: number = 10): Promise<any> {
@@ -65,7 +67,7 @@ export class UserService {
         return { result, count }
     }
 
-    async getById(id: string) {
+    async getById(id: string, selfId: string) {
         let user = await this.userRepository.findOne({
             where: { id },
             relations: ['interests']
@@ -87,6 +89,8 @@ export class UserService {
             ssoLogin: user.ssoLogin,
             followerCount: user.followerCount,
             followingCount: user.followingCount,
+            isFollowing: await this.followService.isMyFollowing(id, selfId),
+            isFollower: await this.followService.isMyFollower(id, selfId),
             postCount: user.postCount,
             lastSeen: user.lastSeen,
             createdAt: user.createdAt,
@@ -292,7 +296,7 @@ export class UserService {
     async getAllCommentsByUser(userId: string, selfId: string, page: number = 1, pageSize: number = 10): Promise<any> {
         let [comment, count] = await this.commentRepository.findAndCount({
             where: { user: { id: userId } },
-            relations: ['user', 'tweet', 'tweet.interests','tweet.hashtags'],
+            relations: ['user', 'tweet', 'tweet.interests', 'tweet.hashtags'],
             skip: (page - 1) * pageSize,
             take: pageSize,
         });

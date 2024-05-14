@@ -58,6 +58,7 @@ export class BookmarkService {
         let result: UsersList[] = await Promise.all(foundedbookmarks.flatMap(async u => {
             if (u.user.id !== selfId) {
                 let isFollowing = await this.followService.isMyFollowing(u.user.id, selfId);
+                let isFollower = await this.followService.isMyFollower(u.user.id, selfId);
                 return {
                     id: u.user.id,
                     username: u.user.username,
@@ -65,6 +66,7 @@ export class BookmarkService {
                     avatar: u.user.avatar,
                     verified: u.user.verified,
                     isFollowing,
+                    isFollower,
                 };
             }
         })).then(result => result.filter(Boolean));

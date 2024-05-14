@@ -12,6 +12,7 @@ import { Bookmark } from '../bookmark/entities/bookmark.entity';
 import { BookmarkModule } from '../bookmark/bookmark.module';
 import { Comment } from '../comment/entities/comment.entity';
 import { CommentModule } from '../comment/comment.module';
+import { FollowModule } from '../follow/follow.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CommentModule } from '../comment/comment.module';
     RetweetModule,
     BookmarkModule,
     CommentModule,
+    FollowModule,
   ],
   controllers: [UserController],
   providers: [UserService],
