@@ -38,7 +38,7 @@ export class FollowService {
     }
 
     async getFollowers(userId: string, page: number = 1, pageSize: number = 10): Promise<any> {
-        let [result, count] = await this.followRepository.find({
+        let [result, count] = await this.followRepository.findAndCount({
             where: { following: { id: userId } },
             skip: (page - 1) * pageSize,
             take: pageSize,
@@ -47,7 +47,7 @@ export class FollowService {
     }
 
     async getFollowings(userId: string, page: number = 1, pageSize: number = 10): Promise<any> {
-        let [result, count] = await this.followRepository.find({
+        let [result, count] = await this.followRepository.findAndCount({
             where: { follower: { id: userId } },
             skip: (page - 1) * pageSize,
             take: pageSize,
