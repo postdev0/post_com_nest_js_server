@@ -34,7 +34,7 @@ export class S3Controller {
 
   @Post('cover')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('cover'))
+  @UseInterceptors(FileInterceptor('image'))
   async uploadCover(@Req() request: Request, @Res() response: Response, @UploadedFile() file: Express.Multer.File): Promise<void> {
     try {
       console.log({ file })
