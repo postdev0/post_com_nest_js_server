@@ -5,7 +5,15 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
-import { VerifyEmailDto, VerifyOtpDto, LoginDto, SSOLoginDto, NewAccessTokenDto, ForgotPasswordDto, ForgotPasswordVerifyEmailDto } from './dto/create.dto';
+import {
+  VerifyEmailDto,
+  VerifyOtpDto,
+  LoginDto,
+  SSOLoginDto,
+  NewAccessTokenDto,
+  ForgotPasswordDto,
+  ForgotPasswordVerifyEmailDto,
+} from './dto/create.dto';
 import * as bcrypt from 'bcryptjs';
 import { Blacklist } from './entities/blacklist.entity';
 import { otpGenerator, sixDigitGenerator } from '../../common/generator';
@@ -22,16 +30,13 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Blacklist)
     private readonly blackListRepository: Repository<Blacklist>,
-  ) { }
+  ) {}
 
   #createOtpToken(user: any) {
-    let accessToken = this.jwtSvc.sign(
-      user,
-      {
-        secret: this.configSvc.get<string>('JWT_SECRET'),
-        expiresIn: `${this.configSvc.get<number>('JWT_OTP_TOKEN_EXPIRY_TIME')}m`,
-      },
-    );
+    let accessToken = this.jwtSvc.sign(user, {
+      secret: this.configSvc.get<string>('JWT_SECRET'),
+      expiresIn: `${this.configSvc.get<number>('JWT_OTP_TOKEN_EXPIRY_TIME')}m`,
+    });
     this.jwtSvc.decode;
     return accessToken;
   }
@@ -63,27 +68,36 @@ export class AuthService {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   async sendOtp(verifyEmailDto: VerifyEmailDto): Promise<any> {
-    let existingUser = await this.userRepository.findOne({ where: { email: verifyEmailDto.email, deleteFlag: false, ssoLogin: false } })
+    let existingUser = await this.userRepository.findOne({
+      where: {
+        email: verifyEmailDto.email,
+        deleteFlag: false,
+        ssoLogin: false,
+      },
+    });
     if (existingUser) {
-      throw new Error("User already registered, please login...!");
+      throw new Error('User already registered, please login...!');
     } else {
       let otp = otpGenerator();
       await this.mailService.sendOTP({ email: verifyEmailDto.email, otp });
       let hashedOtp = await bcrypt.hash(otp, 8);
-      return { otp, otpToken: this.#createOtpToken({ hashedOtp, ...verifyEmailDto }) };
+      return {
+        otp,
+        otpToken: this.#createOtpToken({ hashedOtp, ...verifyEmailDto }),
+      };
     }
   }
 
   async verifyOtp(verifyOtpDto: VerifyOtpDto): Promise<UserAuthData> {
     let verify = await this.jwtSvc.decode(verifyOtpDto.otpToken);
-    if (!verify) throw new Error("OTP is expired...!");
-    let otpIsValid = await bcrypt.compare(verifyOtpDto.otp, verify.hashedOtp)
-    if (!otpIsValid) throw new Error("OTP is not valid...!");
+    if (!verify) throw new Error('OTP is expired...!');
+    let otpIsValid = await bcrypt.compare(verifyOtpDto.otp, verify.hashedOtp);
+    if (!otpIsValid) throw new Error('OTP is not valid...!');
     let user: any = {
       fullName: verify.fullName,
       email: verify.email,
       dob: verify.dob,
-    }
+    };
     let userDetails: User = await this.userRepository.save(user);
     let accessToken = this.#createJwtAccessToken(userDetails);
     let refreshToken = this.#createJwtRefreshToken(userDetails);
@@ -104,9 +118,9 @@ export class AuthService {
       .andWhere('userDetails.ssoLogin = :ssoLogin', { ssoLogin: false })
       .getOne();
 
-    if (!userDetails) throw new Error("Incorrect username/email");
+    if (!userDetails) throw new Error('Incorrect username/email');
     let match = await bcrypt.compare(loginDto.password, userDetails.password);
-    if (!match) throw new Error("Incorrect password");
+    if (!match) throw new Error('Incorrect password');
     let accessToken = this.#createJwtAccessToken(userDetails);
     let refreshToken = this.#createJwtRefreshToken(userDetails);
     delete userDetails.password;
@@ -116,7 +130,9 @@ export class AuthService {
   }
 
   async ssoLogin(ssoLoginDto: SSOLoginDto): Promise<UserAuthData> {
-    let existingUser = await this.userRepository.findOne({ where: { email: ssoLoginDto.email, deleteFlag: false, ssoLogin: true } })
+    let existingUser = await this.userRepository.findOne({
+      where: { email: ssoLoginDto.email, deleteFlag: false, ssoLogin: true },
+    });
     if (existingUser) {
       let accessToken = this.#createJwtAccessToken(existingUser);
       let refreshToken = this.#createJwtRefreshToken(existingUser);
@@ -126,15 +142,19 @@ export class AuthService {
       return { ...existingUser, accessToken, refreshToken, isNewUser: false };
     } else {
       let username = extractUsername(ssoLoginDto.email);
-      let userWithUsername = await this.userRepository.findOne({ where: { username, deleteFlag: false } });
-      username = userWithUsername ? `${username}${sixDigitGenerator()}` : username;
+      let userWithUsername = await this.userRepository.findOne({
+        where: { username, deleteFlag: false },
+      });
+      username = userWithUsername
+        ? `${username}${sixDigitGenerator()}`
+        : username;
       let user: any = {
         email: ssoLoginDto.email,
         fullName: ssoLoginDto.fullName,
         username,
         avatar: ssoLoginDto.picture,
-        ssoLogin: true
-      }
+        ssoLogin: true,
+      };
       let userDetails: User = await this.userRepository.save(user);
       let accessToken = this.#createJwtAccessToken(userDetails);
       let refreshToken = this.#createJwtRefreshToken(userDetails);
@@ -147,31 +167,57 @@ export class AuthService {
 
   async newAccessToken(newAccessTokenDto: NewAccessTokenDto): Promise<any> {
     let verify = await this.jwtSvc.decode(newAccessTokenDto.refreshToken);
-    if (!verify) throw new Error("Invalid refresh token");
-    let existingRefreshToken = await this.blackListRepository.findOne({ where: { refreshToken: newAccessTokenDto.refreshToken } });
-    if (existingRefreshToken) throw new Error("Refresh Token is expired");
+    if (!verify) throw new Error('Invalid refresh token');
+    let existingRefreshToken = await this.blackListRepository.findOne({
+      where: { refreshToken: newAccessTokenDto.refreshToken },
+    });
+    if (existingRefreshToken) throw new Error('Refresh Token is expired');
     await this.blackListRepository.save(newAccessTokenDto);
     let accessToken = this.#createJwtAccessToken(verify);
     let refreshToken = this.#createJwtRefreshToken(verify);
     return { accessToken, refreshToken };
   }
 
-  async sendOtpForgotPassword(forgotPasswordVerifyEmailDto: ForgotPasswordVerifyEmailDto): Promise<any> {
-    let existingUser = await this.userRepository.findOne({ where: { email: forgotPasswordVerifyEmailDto.email, deleteFlag: false, ssoLogin: false } })
-    if (!existingUser) throw new Error("Invalid User/Email or User may be deleted...!");
+  async sendOtpForgotPassword(
+    forgotPasswordVerifyEmailDto: ForgotPasswordVerifyEmailDto,
+  ): Promise<any> {
+    let existingUser = await this.userRepository.findOne({
+      where: {
+        email: forgotPasswordVerifyEmailDto.email,
+        deleteFlag: false,
+        ssoLogin: false,
+      },
+    });
+    if (!existingUser)
+      throw new Error('Invalid User/Email or User may be deleted...!');
     let otp = otpGenerator();
-    await this.mailService.sendOTP({ email: forgotPasswordVerifyEmailDto.email, otp });
+    await this.mailService.sendOTP({
+      email: forgotPasswordVerifyEmailDto.email,
+      otp,
+    });
     let hashedOtp = await bcrypt.hash(otp, 8);
-    return { otp, otpToken: this.#createOtpToken({ hashedOtp, ...forgotPasswordVerifyEmailDto }) };
+    return {
+      otp,
+      otpToken: this.#createOtpToken({
+        hashedOtp,
+        ...forgotPasswordVerifyEmailDto,
+      }),
+    };
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<any> {
     let verify = await this.jwtSvc.decode(forgotPasswordDto.otpToken);
-    if (!verify) throw new Error("OTP is expired...!");
-    let otpIsValid = await bcrypt.compare(forgotPasswordDto.otp, verify.hashedOtp)
-    if (!otpIsValid) throw new Error("OTP is not valid...!");
-    let userDetails = await this.userRepository.findOne({ where: { email: verify.email, deleteFlag: false } })
-    if (!userDetails) throw new Error("Invalid User or User may be deleted...!");
+    if (!verify) throw new Error('OTP is expired...!');
+    let otpIsValid = await bcrypt.compare(
+      forgotPasswordDto.otp,
+      verify.hashedOtp,
+    );
+    if (!otpIsValid) throw new Error('OTP is not valid...!');
+    let userDetails = await this.userRepository.findOne({
+      where: { email: verify.email, deleteFlag: false },
+    });
+    if (!userDetails)
+      throw new Error('Invalid User or User may be deleted...!');
     let password = await bcrypt.hash(forgotPasswordDto.password, 8);
     await this.userRepository.update(userDetails.id, { password });
     let accessToken = this.#createJwtAccessToken(userDetails);

@@ -1,3 +1,3 @@
 export interface UpdateCommentDto {
-    text: string;
+  text: string;
 }

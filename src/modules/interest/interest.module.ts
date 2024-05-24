@@ -12,16 +12,16 @@ import { CommentModule } from '../comment/comment.module';
 import { FollowModule } from '../follow/follow.module';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([Interest, User, Tweet]),
-        LikeModule,
-        RetweetModule,
-        BookmarkModule,
-        CommentModule,
-        FollowModule,
-    ],
-    controllers: [InterestController],
-    providers: [InterestService],
-    exports: [InterestService],
+  imports: [
+    TypeOrmModule.forFeature([Interest, User, Tweet]),
+    LikeModule,
+    RetweetModule,
+    BookmarkModule,
+    CommentModule,
+    FollowModule,
+  ],
+  controllers: [InterestController],
+  providers: [InterestService],
+  exports: [InterestService],
 })
-export class InterestModule { }
+export class InterestModule {}

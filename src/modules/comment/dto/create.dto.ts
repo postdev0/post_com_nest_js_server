@@ -1,5 +1,3 @@
 export interface CreateCommentDto {
-    text: string;
+  text: string;
 }
-
-

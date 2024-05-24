@@ -14,4 +14,4 @@ import { Blacklist } from './entities/blacklist.entity';
   providers: [AuthService, JwtStrategy],
   exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}

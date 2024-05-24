@@ -37,4 +37,4 @@ import { HashtagModule } from './modules/hashtag/hashtag.module';
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

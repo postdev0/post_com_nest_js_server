@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MailService {
-  constructor(private mailerService: MailerService) { }
+  constructor(private mailerService: MailerService) {}
 
   async sendOTP(data: any) {
     let { email, otp } = data;
@@ -11,7 +11,7 @@ export class MailService {
       to: email,
       subject: 'OTP for verification',
       template: 'otp-verification',
-      context: { otp }
+      context: { otp },
     });
     return;
   }

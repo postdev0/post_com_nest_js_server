@@ -6,9 +6,9 @@ import { FollowController } from './follow.controller';
 import { User } from '../user/entities/user.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Follow, User])],
-    controllers: [FollowController],
-    providers: [FollowService],
-    exports: [FollowService],
+  imports: [TypeOrmModule.forFeature([Follow, User])],
+  controllers: [FollowController],
+  providers: [FollowService],
+  exports: [FollowService],
 })
-export class FollowModule { }
+export class FollowModule {}

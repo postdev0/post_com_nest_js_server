@@ -8,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -32,7 +31,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException('JwtStrategy unauthorized');
     }
-    let userData: User = await this.userRepository.findOne({ where: { email: user.email, deleteFlag: false } });
+    let userData: User = await this.userRepository.findOne({
+      where: { email: user.email, deleteFlag: false },
+    });
     return userData;
   }
 }
