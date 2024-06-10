@@ -129,6 +129,12 @@ export interface UserCommentedTweetsList {
   tweet_selfRetweeted: boolean;
   tweet_selfCommented: boolean;
   tweet_selfBookmarked: boolean;
+  tweet_userId:string;
+  tweet_username:string;
+  tweet_fullName:string;
+  tweet_avatar:string;
+  tweet_createdAt:Date;
+  tweet_modifiedAt:Date;
   id: string;
   text: string;
   media: string[];

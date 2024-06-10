@@ -15,6 +15,8 @@ import { FeedModule } from './modules/feed/feed.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { InterestModule } from './modules/interest/interest.module';
 import { HashtagModule } from './modules/hashtag/hashtag.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { BlockModule } from './modules/block/block.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { HashtagModule } from './modules/hashtag/hashtag.module';
     CommentModule,
     InterestModule,
     HashtagModule,
+    NotificationModule,
+    BlockModule,
   ],
   controllers: [],
   providers: [],

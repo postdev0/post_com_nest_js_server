@@ -10,9 +10,10 @@ import { UsersList } from '../../base/interface';
 @Injectable()
 export class BookmarkService {
   constructor(
-    @InjectRepository(Tweet) private tweetRepository: Repository<Tweet>,
+    @InjectRepository(Tweet)
+    private readonly tweetRepository: Repository<Tweet>,
     @InjectRepository(Bookmark)
-    private bookmarkRepository: Repository<Bookmark>,
+    private readonly bookmarkRepository: Repository<Bookmark>,
     private readonly followService: FollowService,
   ) {}
 

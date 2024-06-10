@@ -5,9 +5,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Tweet } from '../tweet/entities/tweet.entity';
 import { Like } from './entities/like.entity';
 import { FollowModule } from '../follow/follow.module';
+import { NotificationModule } from '../notification/notification.module';
+import { CommonModule } from '../common/commonModule';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tweet, Like]), FollowModule],
+  imports: [
+    TypeOrmModule.forFeature([Tweet, Like]),
+    FollowModule,
+    NotificationModule,
+    CommonModule,
+  ],
   controllers: [LikeController],
   providers: [LikeService],
   exports: [LikeService],

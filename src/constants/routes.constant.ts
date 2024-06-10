@@ -4,6 +4,7 @@ export const RoutesConstants = {
   PAGE: 'page',
   PAGESIZE: 'pageSize',
   ID: 'id',
+  USERNAME: 'username',
   ACTION: 'action',
 
   // Auth Module
@@ -22,6 +23,7 @@ export const RoutesConstants = {
   GET_USER_BOOKMARKED_TWEETS: 'get-user-bookmarked-tweets',
   GET_USER_COMMENTED_TWEETS: 'get-user-commented-tweets',
   GET_USER_DETAILS: 'get-user-details',
+  GET_USER_BY_USERNAME: 'get-user-by-username',
   GET_ALL_USER: 'get-all-user',
   UPDATE_USER_DETAILS: 'update-user-details',
   UPDATE_USER_ACTION: 'update-user-action',

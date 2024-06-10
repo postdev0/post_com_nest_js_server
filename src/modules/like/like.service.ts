@@ -6,6 +6,8 @@ import { Like } from './entities/like.entity';
 import { User } from '../user/entities/user.entity';
 import { FollowService } from '../follow/follow.service';
 import { UsersList } from '../../base/interface';
+import { NotificationService } from '../notification/notification.service';
+import { CommonService } from '../common/commonService';
 
 @Injectable()
 export class LikeService {
@@ -13,14 +15,59 @@ export class LikeService {
     @InjectRepository(Tweet) private tweetRepository: Repository<Tweet>,
     @InjectRepository(Like) private likeRepository: Repository<Like>,
     private readonly followService: FollowService,
+    private readonly notificationService: NotificationService,
+    private readonly commonService: CommonService,
   ) {}
+
+  async sendPushNotification(
+    id: string,
+    title: string,
+    message: string,
+    data?: any,
+  ) {
+    try {
+      await this.notificationService.sendPush(id, title, message, data);
+    } catch (e) {
+      console.log('Error sending push notification', e);
+    }
+  }
 
   async addRemoveLike(dto: any, user: User): Promise<any> {
     const foundedTweet: Tweet | null = await this.tweetRepository.findOne({
-      where: { id: dto.tweetId },
-      relations: ['likes'],
+      where: { id: dto.tweetId, deleteFlag: false },
+      relations: ['likes', 'user', 'interests', 'hashtags'],
     });
     if (!foundedTweet) throw new NotFoundException('Tweet not found');
+    let { selfLiked, selfRetweeted, selfCommented, selfBookmarked } =
+      await this.commonService.likeRetweetCommentBokkmarkProvider(
+        foundedTweet,
+        foundedTweet.user.id,
+      );
+    let tweetObject = {
+      id: foundedTweet.id,
+      text: foundedTweet.text,
+      media: foundedTweet.media,
+      interests: foundedTweet.interests.map((i) => i.name),
+      hashtags: foundedTweet.hashtags.map((i) => i.name),
+      commentsCount: foundedTweet.commentsCount,
+      retweetsCount: foundedTweet.retweetsCount,
+      bookmarksCount: foundedTweet.bookmarksCount,
+      likesCount: foundedTweet.likesCount,
+      taggedUsers: foundedTweet.taggedUsers,
+      isRetweeted: foundedTweet.isRetweeted,
+      isEdited: foundedTweet.isEdited,
+      isPublic: foundedTweet.isPublic,
+      selfLiked,
+      selfRetweeted,
+      selfCommented,
+      selfBookmarked,
+      userId: foundedTweet.user.id,
+      username: foundedTweet.user.username,
+      fullName: foundedTweet.user.fullName,
+      avatar: foundedTweet.user.avatar,
+      createdAt: foundedTweet.createdAt,
+      modifiedAt: foundedTweet.modifiedAt,
+    };
     const foundedLike: Like | null = await this.likeRepository.findOne({
       where: { user: { id: user.id }, tweet: { id: dto.tweetId } },
     });
@@ -42,6 +89,12 @@ export class LikeService {
       foundedTweet.likesCount++;
       foundedTweet.likes.push(newLike);
       await this.tweetRepository.save(foundedTweet);
+      this.sendPushNotification(
+        foundedTweet.user.id,
+        'Like update',
+        `@${user.username} has liked on your tweet`,
+        { tweetData: JSON.stringify(tweetObject) },
+      );
       return { like: true };
     }
   }

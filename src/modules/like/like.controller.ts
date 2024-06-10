@@ -38,6 +38,7 @@ export class LikeController {
       );
       successResponse(response, result);
     } catch (error: any) {
+      console.log(error)
       errorResponse(response, error.message);
     }
   }
@@ -60,6 +61,7 @@ export class LikeController {
       );
       successPaginatedResponse(response, result, count, page, pageSize);
     } catch (error: any) {
+      console.log(error)
       errorResponse(response, error.message);
     }
   }

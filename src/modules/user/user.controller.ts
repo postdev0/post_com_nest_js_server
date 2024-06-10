@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -49,6 +50,24 @@ export class UserController {
     try {
       let result = await this.userService.getById(
         id || (request.user as any).id,
+        (request.user as any).id,
+      );
+      successResponse(response, result);
+    } catch (error: any) {
+      errorResponse(response, error.message);
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(RoutesConstants.GET_USER_BY_USERNAME)
+  async getByUsername(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Query(RoutesConstants.USERNAME) username: string,
+  ): Promise<void> {
+    try {
+      let result = await this.userService.getByUsername(
+        username,
         (request.user as any).id,
       );
       successResponse(response, result);
@@ -257,6 +276,55 @@ export class UserController {
         pageSize,
       );
       successPaginatedResponse(response, result, count, page, pageSize);
+    } catch (error: any) {
+      errorResponse(response, error.message);
+    }
+  }
+
+  @Put('push/enable')
+  @UseGuards(JwtAuthGuard)
+  async enablePush(
+    @Body() update_dto: any,
+    @Req() request: Request,
+    @Res() response: Response,
+  ) {
+    try {
+      let result = await this.userService.enablePush(
+        (request.user as any).id,
+        update_dto,
+      );
+      successResponse(response, result);
+    } catch (error: any) {
+      errorResponse(response, error.message);
+    }
+  }
+
+  @Put('push/disable')
+  @UseGuards(JwtAuthGuard)
+  async disablePush(
+    @Body() update_dto: any,
+    @Req() request: Request,
+    @Res() response: Response,
+  ) {
+    try {
+      let result = await this.userService.disablePush(
+        (request.user as any).id,
+        update_dto,
+      );
+      successResponse(response, result);
+    } catch (error: any) {
+      errorResponse(response, error.message);
+    }
+  }
+
+  @Get('push/notifications')
+  async fetchPushNotifications(
+    @Req() request: Request,
+    @Res() response: Response,
+  ) {
+    try {
+      let result = await this.userService.getPushNotifications();
+      successResponse(response, result);
     } catch (error: any) {
       errorResponse(response, error.message);
     }

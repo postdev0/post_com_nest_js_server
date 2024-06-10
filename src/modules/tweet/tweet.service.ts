@@ -24,8 +24,8 @@ export class TweetService {
     private readonly likeService: LikeService,
     private readonly retweetService: RetweetService,
     private readonly bookmarkService: BookmarkService,
-    private readonly s3Service: S3Service,
     private readonly commentService: CommentService,
+    private readonly s3Service: S3Service,
   ) {}
 
   async create(dto: any, user: any, media?: any[]): Promise<any> {
@@ -60,46 +60,43 @@ export class TweetService {
       relations: ['user', 'interests', 'hashtags'],
     });
     if (!tweet) throw new NotFoundException('Tweet not found');
-    if (!(tweet && tweet.user))
+    if (!(tweet && tweet.user)) {
       throw new NotFoundException('User associated with this tweet not found');
-    if (tweet && tweet.user) {
-      return {
-        id: tweet.id,
-        text: tweet.text,
-        media: tweet.media,
-        interests: tweet.interests.map((i) => i.name),
-        hashtags: tweet.hashtags.map((i) => i.name),
-        commentsCount: tweet.commentsCount,
-        retweetsCount: tweet.retweetsCount,
-        bookmarksCount: tweet.bookmarksCount,
-        likesCount: tweet.likesCount,
-        taggedUsers: tweet.taggedUsers,
-        isRetweeted: tweet.isRetweeted,
-        isEdited: tweet.isEdited,
-        isPublic: tweet.isPublic,
-        selfLiked: await this.likeService.isTweetLikedByUser(tweet, selfId),
-        selfRetweeted: await this.retweetService.isTweetRetweetedByUser(
-          tweet,
-          selfId,
-        ),
-        selfCommented: await this.commentService.isTweetCommentedByUser(
-          tweet,
-          selfId,
-        ),
-        selfBookmarked: await this.bookmarkService.isTweetBookmarkedByUser(
-          tweet,
-          selfId,
-        ),
-        userId: tweet.user.id,
-        username: tweet.user.username,
-        fullName: tweet.user.fullName,
-        avatar: tweet.user.avatar,
-        createdAt: tweet.createdAt,
-        modifiedAt: tweet.modifiedAt,
-      };
-    } else {
-      return null;
     }
+    return {
+      id: tweet.id,
+      text: tweet.text,
+      media: tweet.media,
+      interests: tweet.interests.map((i) => i.name),
+      hashtags: tweet.hashtags.map((i) => i.name),
+      commentsCount: tweet.commentsCount,
+      retweetsCount: tweet.retweetsCount,
+      bookmarksCount: tweet.bookmarksCount,
+      likesCount: tweet.likesCount,
+      taggedUsers: tweet.taggedUsers,
+      isRetweeted: tweet.isRetweeted,
+      isEdited: tweet.isEdited,
+      isPublic: tweet.isPublic,
+      selfLiked: await this.likeService.isTweetLikedByUser(tweet, selfId),
+      selfRetweeted: await this.retweetService.isTweetRetweetedByUser(
+        tweet,
+        selfId,
+      ),
+      selfCommented: await this.commentService.isTweetCommentedByUser(
+        tweet,
+        selfId,
+      ),
+      selfBookmarked: await this.bookmarkService.isTweetBookmarkedByUser(
+        tweet,
+        selfId,
+      ),
+      userId: tweet.user.id,
+      username: tweet.user.username,
+      fullName: tweet.user.fullName,
+      avatar: tweet.user.avatar,
+      createdAt: tweet.createdAt,
+      modifiedAt: tweet.modifiedAt,
+    };
   }
 
   async getAll(

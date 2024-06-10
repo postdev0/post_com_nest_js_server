@@ -10,6 +10,9 @@ import { Bookmark } from '../modules/bookmark/entities/bookmark.entity';
 import { Follow } from '../modules/follow/entities/follow.entity';
 import { Hashtag } from '../modules/hashtag/entities/hashtag.entity';
 import { Interest } from '../modules/interest/entities/interest.entity';
+import { Notification } from '../modules/notification/entities/notification.entity';
+import { NotificationToken } from '../modules/notification/entities/notification-token.entity';
+import { BlockedUser } from '../modules/block/entities/block.entity';
 
 ConfigModule.forRoot();
 
@@ -53,6 +56,9 @@ export const databaseConfig: DataSourceOptions = {
     Follow,
     Hashtag,
     Interest,
+    Notification,
+    NotificationToken,
+    BlockedUser,
   ],
   ssl: {
     rejectUnauthorized: false,

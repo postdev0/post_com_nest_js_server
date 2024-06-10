@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -25,6 +26,8 @@ import {
   UserData,
 } from '../../base/interface';
 import { FollowService } from '../follow/follow.service';
+import { NotificationService } from '../notification/notification.service';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class UserService {
@@ -44,7 +47,22 @@ export class UserService {
     private readonly bookmarkService: BookmarkService,
     private readonly commentService: CommentService,
     private readonly followService: FollowService,
+    private readonly notificationService: NotificationService,
+    private readonly blockService: BlockService,
   ) {}
+
+  async sendPushNotification(
+    id: string,
+    title: string,
+    message: string,
+    data?: any,
+  ) {
+    try {
+      await this.notificationService.sendPush(id, title, message, data);
+    } catch (e) {
+      console.log('Error sending push notification', e);
+    }
+  }
 
   async getAll(page: number = 1, pageSize: number = 10): Promise<any> {
     const [users, count]: any = await this.userRepository.findAndCount({
@@ -81,6 +99,14 @@ export class UserService {
   }
 
   async getById(id: string, selfId: string) {
+    const isBlocked = await this.blockService.isBlocked(
+      { id } as User,
+      { id: selfId } as User,
+    );
+    if (isBlocked) {
+      throw new ForbiddenException('You are blocked by this user.');
+    }
+
     let user = await this.userRepository.findOne({
       where: { id },
       relations: ['interests'],
@@ -111,8 +137,56 @@ export class UserService {
     };
   }
 
+  async getByUsername(username: string, selfId: string) {
+    let user = await this.userRepository.findOne({
+      where: { username },
+      relations: ['interests'],
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+    let id = user.id;
+    const isBlocked = await this.blockService.isBlocked(
+      { id } as User,
+      { id } as User,
+    );
+    if (isBlocked) {
+      throw new ForbiddenException('You are blocked by this user.');
+    }
+    return {
+      id: user.id,
+      fullName: user.fullName,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      interests: user.interests.map((interest: any) => interest.name),
+      avatar: user.avatar,
+      cover: user.cover,
+      bio: user.bio,
+      dob: user.dob,
+      status: user.status,
+      verified: user.verified,
+      ssoLogin: user.ssoLogin,
+      followerCount: user.followerCount,
+      followingCount: user.followingCount,
+      isFollowing: await this.followService.isMyFollowing(id, selfId),
+      isFollower: await this.followService.isMyFollower(id, selfId),
+      postCount: user.postCount,
+      lastSeen: user.lastSeen,
+      createdAt: user.createdAt,
+      modifiedAt: user.modifiedAt,
+    };
+  }
+
   async updateById(id: string, user: any) {
-    return await this.userRepository.update(id, user);
+    let result = await this.userRepository.update(id, user);
+    if (result) {
+      this.sendPushNotification(
+        id,
+        'Profile update',
+        'Your Profile have been updated successfully',
+      );
+    }
+    return result;
     // let data = await this.userRepository.findOneBy({ id });
     // delete data.password;
     // return data;
@@ -127,7 +201,15 @@ export class UserService {
 
   async setPassword(id: string, passwordDto: PasswordDto) {
     let password = await bcrypt.hash(passwordDto.password, 8);
-    return await this.userRepository.update(id, { password });
+    let result = await this.userRepository.update(id, { password });
+    if (result) {
+      this.sendPushNotification(
+        id,
+        'Password setting',
+        'Your Password have been set successfully',
+      );
+    }
+    return result;
   }
 
   async checkUsername(usernameDto: UsernameDto, selfId: string) {
@@ -164,7 +246,14 @@ export class UserService {
     );
     if (!match) throw new Error('Incorrect password');
     let password = await bcrypt.hash(changePasswordDto.password, 8);
-    await this.userRepository.update(userDetails.id, { password });
+    let result = await this.userRepository.update(userDetails.id, { password });
+    if (result) {
+      this.sendPushNotification(
+        id,
+        'Password change',
+        'Your Password have been updated successfully',
+      );
+    }
     return true;
   }
 
@@ -392,7 +481,13 @@ export class UserService {
   ): Promise<any> {
     let [comment, count] = await this.commentRepository.findAndCount({
       where: { user: { id: userId } },
-      relations: ['tweet.user', 'tweet', 'tweet.interests', 'tweet.hashtags'],
+      relations: [
+        'user',
+        'tweet.user',
+        'tweet',
+        'tweet.interests',
+        'tweet.hashtags',
+      ],
       order: { createdAt: 'DESC' },
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -427,14 +522,20 @@ export class UserService {
             c.tweet,
             selfId,
           ),
+          tweet_userId: c.tweet.user.id,
+          tweet_username: c.tweet.user.username,
+          tweet_fullName: c.tweet.user.fullName,
+          tweet_avatar: c.tweet.user.avatar,
+          tweet_createdAt: c.tweet.createdAt,
+          tweet_modifiedAt: c.tweet.modifiedAt,
           id: c.id,
           text: c.text,
           media: c.media,
           isEdited: c.isEdited,
-          userId: c.tweet.user.id,
-          username: c.tweet.user.username,
-          fullName: c.tweet.user.fullName,
-          avatar: c.tweet.user.avatar,
+          userId: c.user.id,
+          username: c.user.username,
+          fullName: c.user.fullName,
+          avatar: c.user.avatar,
           createdAt: c.createdAt,
           modifiedAt: c.modifiedAt,
         };
@@ -442,4 +543,30 @@ export class UserService {
     ).then((result) => result.filter(Boolean));
     return { result, count };
   }
+
+  /////////////////////////////////////// NOTIFICATIONS //////////////////////////////////////
+
+  enablePush = async (id: string, update_dto: any): Promise<any> => {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    return await this.notificationService.acceptPushNotification(
+      user,
+      update_dto,
+    );
+  };
+
+  disablePush = async (id: string, update_dto: any): Promise<any> => {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    return await this.notificationService.disablePushNotification(
+      user,
+      update_dto,
+    );
+  };
+
+  getPushNotifications = async (): Promise<any> => {
+    return await this.notificationService.getNotifications();
+  };
 }

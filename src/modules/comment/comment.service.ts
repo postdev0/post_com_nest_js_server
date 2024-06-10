@@ -7,6 +7,8 @@ import { Comment } from './entities/comment.entity';
 import { S3Service } from '../s3/s3.service';
 import { Tweet } from '../tweet/entities/tweet.entity';
 import { CommentsList } from '../../base/interface';
+import { NotificationService } from '../notification/notification.service';
+import { CommonService } from '../common/commonService';
 
 @Injectable()
 export class CommentService {
@@ -16,7 +18,22 @@ export class CommentService {
     @InjectRepository(Tweet)
     private readonly tweetRepository: Repository<Tweet>,
     private readonly s3Service: S3Service,
+    private readonly notificationService: NotificationService,
+    private readonly commonService: CommonService,
   ) {}
+
+  async sendPushNotification(
+    id: string,
+    title: string,
+    message: string,
+    data?: any,
+  ) {
+    try {
+      await this.notificationService.sendPush(id, title, message, data);
+    } catch (e) {
+      console.log('Error sending push notification', e);
+    }
+  }
 
   async create(
     createCommentDto: CreateCommentDto,
@@ -33,7 +50,37 @@ export class CommentService {
         }),
       );
     }
-    let tweet = await this.tweetRepository.findOneBy({ id: tweetId });
+    let tweet = await this.tweetRepository.findOne({
+      where: { id:tweetId, deleteFlag: false },
+      relations: ['user', 'interests', 'hashtags'],
+    });
+
+    let { selfLiked, selfRetweeted, selfCommented, selfBookmarked } = await this.commonService.likeRetweetCommentBokkmarkProvider(tweet, tweet.user.id)
+    let tweetObject =  {
+      id: tweet.id,
+      text: tweet.text,
+      media: tweet.media,
+      interests: tweet.interests.map((i) => i.name),
+      hashtags: tweet.hashtags.map((i) => i.name),
+      commentsCount: tweet.commentsCount,
+      retweetsCount: tweet.retweetsCount,
+      bookmarksCount: tweet.bookmarksCount,
+      likesCount: tweet.likesCount,
+      taggedUsers: tweet.taggedUsers,
+      isRetweeted: tweet.isRetweeted,
+      isEdited: tweet.isEdited,
+      isPublic: tweet.isPublic,
+      selfLiked,
+      selfRetweeted,
+      selfCommented,
+      selfBookmarked,
+      userId: tweet.user.id,
+      username: tweet.user.username,
+      fullName: tweet.user.fullName,
+      avatar: tweet.user.avatar,
+      createdAt: tweet.createdAt,
+      modifiedAt: tweet.modifiedAt,
+    };
     const comment = this.commentRepository.create({
       media: commentMedia,
       ...createCommentDto,
@@ -42,7 +89,16 @@ export class CommentService {
     comment.tweet = tweet;
     tweet.commentsCount++;
     await this.tweetRepository.save(tweet);
-    return await this.commentRepository.save(comment);
+    let result = await this.commentRepository.save(comment);
+    if(result){
+      this.sendPushNotification(
+        tweet.user.id,
+        'Comment update',
+        `@${user.username} has commented on your tweet`,
+        { tweetData: JSON.stringify(tweetObject) },
+      );
+    }
+    return result; 
   }
 
   async getCommentById(id: string): Promise<Comment> {

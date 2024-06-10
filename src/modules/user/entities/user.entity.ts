@@ -15,6 +15,8 @@ import { Comment } from '../../comment/entities/comment.entity';
 import { Bookmark } from '../../bookmark/entities/bookmark.entity';
 import { Interest } from '../../interest/entities/interest.entity';
 import { ROLES } from '../../../enums/role.enum';
+import { NotificationToken } from '../../notification/entities/notification-token.entity';
+import { BlockedUser } from '../../block/entities/block.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -112,4 +114,13 @@ export class User extends BaseEntity {
     inverseJoinColumn: { name: 'interestId', referencedColumnName: 'id' },
   })
   interests: Interest[];
+
+  @OneToMany(() => NotificationToken, (notificationToken) => notificationToken.user)
+  notificationTokens: NotificationToken[];
+
+  @OneToMany(() => BlockedUser, (blockedUser) => blockedUser.blocker)
+  blockedUsers: BlockedUser[];
+
+  @OneToMany(() => BlockedUser, (blockedUser) => blockedUser.blocked)
+  blockedByUsers: BlockedUser[];
 }

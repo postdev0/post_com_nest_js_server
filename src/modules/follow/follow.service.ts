@@ -4,13 +4,28 @@ import { ILike, Repository } from 'typeorm';
 import { Follow } from './entities/follow.entity';
 import { User } from '../user/entities/user.entity';
 import { UsersList } from '../../base/interface';
+import { NotificationService } from '../notification/notification.service';
 @Injectable()
 export class FollowService {
   constructor(
     @InjectRepository(Follow)
     private readonly followRepository: Repository<Follow>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly notificationService: NotificationService,
   ) {}
+
+  async sendPushNotification(
+    id: string,
+    title: string,
+    message: string,
+    data?: any,
+  ) {
+    try {
+      await this.notificationService.sendPush(id, title, message, data);
+    } catch (e) {
+      console.log('Error sending push notification', e);
+    }
+  }
 
   async followUnfollowUser(
     followerId: string,
@@ -48,6 +63,12 @@ export class FollowService {
     userFollowing.followerCount++;
     await this.followRepository.save(follow);
     await this.userRepository.save([userFollower, userFollowing]);
+    this.sendPushNotification(
+      followingId,
+      'Follow update',
+      `@${userFollower.username} started following you`,
+      { followerId },
+    );
     return { follow: true };
   }
 

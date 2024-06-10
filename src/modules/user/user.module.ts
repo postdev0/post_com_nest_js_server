@@ -13,15 +13,20 @@ import { BookmarkModule } from '../bookmark/bookmark.module';
 import { Comment } from '../comment/entities/comment.entity';
 import { CommentModule } from '../comment/comment.module';
 import { FollowModule } from '../follow/follow.module';
+import { NotificationModule } from '../notification/notification.module';
+import { BlockedUser } from '../block/entities/block.entity';
+import { BlockModule } from '../block/block.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Tweet, Like, Retweet, Bookmark, Comment]),
+    TypeOrmModule.forFeature([User, Tweet, Like, Retweet, Bookmark, Comment, BlockedUser]),
     LikeModule,
     RetweetModule,
     BookmarkModule,
     CommentModule,
     FollowModule,
+    NotificationModule,
+    BlockModule,
   ],
   controllers: [UserController],
   providers: [UserService],
