@@ -10,8 +10,6 @@ ConfigModule.forRoot();
 
 const { FIREBASE_CREDENTIALS } = process.env;
 const serviceAccount = JSON.parse(FIREBASE_CREDENTIALS);
-console.log({ FIREBASE_CREDENTIALS });
-console.log({ serviceAccount });
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -93,7 +91,7 @@ export class NotificationService {
           status: 'ACTIVE',
           created_by: id,
         });
-        await firebase
+        let result = await firebase
           .messaging()
           .send({
             notification: { title, body },
@@ -104,6 +102,7 @@ export class NotificationService {
           .catch((error: any) => {
             console.error(error);
           });
+        console.log({ result });
       }
     } catch (error) {
       console.error(error);
