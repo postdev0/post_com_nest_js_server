@@ -9,8 +9,8 @@ import admin from 'firebase-admin';
 ConfigModule.forRoot();
 
 const { FIREBASE_CREDENTIALS } = process.env;
-console.log({ FIREBASE_CREDENTIALS });
 const serviceAccount = JSON.parse(FIREBASE_CREDENTIALS);
+console.log({ FIREBASE_CREDENTIALS });
 console.log({ serviceAccount });
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -80,6 +80,8 @@ export class NotificationService {
     additionalData?: Record<string, any>,
   ): Promise<void> => {
     try {
+      console.log({ FIREBASE_CREDENTIALS });
+      console.log({ serviceAccount });
       const notification = await this.notificationTokenRepo.findOne({
         where: { user: { id }, status: 'ACTIVE' },
       });
