@@ -102,7 +102,9 @@ export class NotificationService {
           .catch((error: any) => {
             console.error(error);
           });
+        console.log("result before");
         console.log({ result });
+        console.log("result after");
       }
     } catch (error) {
       console.error(error);
