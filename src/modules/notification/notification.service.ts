@@ -9,6 +9,7 @@ import admin from 'firebase-admin';
 ConfigModule.forRoot();
 
 const { FIREBASE_CREDENTIALS } = process.env;
+console.log({ FIREBASE_CREDENTIALS });
 const serviceAccount = JSON.parse(FIREBASE_CREDENTIALS);
 console.log({ serviceAccount });
 admin.initializeApp({
