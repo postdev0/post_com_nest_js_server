@@ -80,6 +80,7 @@ export class NotificationService {
     try {
       // console.log({ FIREBASE_CREDENTIALS });
       // console.log({ serviceAccount });
+      console.log("serviceAccount");
       const notification = await this.notificationTokenRepo.findOne({
         where: { user: { id }, status: 'ACTIVE' },
       });
