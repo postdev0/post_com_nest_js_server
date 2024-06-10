@@ -78,11 +78,12 @@ export class NotificationService {
     additionalData?: Record<string, any>,
   ): Promise<void> => {
     try {
-      console.log({ FIREBASE_CREDENTIALS });
-      console.log({ serviceAccount });
+      // console.log({ FIREBASE_CREDENTIALS });
+      // console.log({ serviceAccount });
       const notification = await this.notificationTokenRepo.findOne({
         where: { user: { id }, status: 'ACTIVE' },
       });
+      console.log({notification})
       if (notification) {
         await this.notificationsRepo.save({
           notification_token: notification,
