@@ -8,9 +8,11 @@ import { ConfigModule } from '@nestjs/config';
 import admin from 'firebase-admin';
 ConfigModule.forRoot();
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
+const { FIREBASE_CREDENTIALS } = process.env;
+const serviceAccount = JSON.parse(FIREBASE_CREDENTIALS);
+console.log({ serviceAccount });
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
 
 @Injectable()
