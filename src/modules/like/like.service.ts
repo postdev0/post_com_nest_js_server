@@ -93,7 +93,12 @@ export class LikeService {
         foundedTweet.user.id,
         'Like update',
         `@${user.username} has liked on your tweet`,
-        { tweetData: JSON.stringify(tweetObject) },
+        {
+          notificationData: {
+            notificationType: 'like',
+            data: JSON.stringify(tweetObject),
+          },
+        },
       );
       return { like: true };
     }

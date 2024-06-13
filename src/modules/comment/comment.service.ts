@@ -51,12 +51,16 @@ export class CommentService {
       );
     }
     let tweet = await this.tweetRepository.findOne({
-      where: { id:tweetId, deleteFlag: false },
+      where: { id: tweetId, deleteFlag: false },
       relations: ['user', 'interests', 'hashtags'],
     });
 
-    let { selfLiked, selfRetweeted, selfCommented, selfBookmarked } = await this.commonService.likeRetweetCommentBokkmarkProvider(tweet, tweet.user.id)
-    let tweetObject =  {
+    let { selfLiked, selfRetweeted, selfCommented, selfBookmarked } =
+      await this.commonService.likeRetweetCommentBokkmarkProvider(
+        tweet,
+        tweet.user.id,
+      );
+    let tweetObject = {
       id: tweet.id,
       text: tweet.text,
       media: tweet.media,
@@ -90,15 +94,20 @@ export class CommentService {
     tweet.commentsCount++;
     await this.tweetRepository.save(tweet);
     let result = await this.commentRepository.save(comment);
-    if(result){
+    if (result) {
       this.sendPushNotification(
         tweet.user.id,
         'Comment update',
         `@${user.username} has commented on your tweet`,
-        { tweetData: JSON.stringify(tweetObject) },
+        {
+          notificationData: {
+            notificationType: 'comment',
+            data: JSON.stringify(tweetObject),
+          },
+        },
       );
     }
-    return result; 
+    return result;
   }
 
   async getCommentById(id: string): Promise<Comment> {

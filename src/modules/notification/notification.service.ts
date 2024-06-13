@@ -77,39 +77,28 @@ export class NotificationService {
     body: string,
     additionalData?: Record<string, any>,
   ): Promise<void> => {
-    try {
-      // console.log({ FIREBASE_CREDENTIALS });
-      // console.log({ serviceAccount });
-      console.log("serviceAccount");
-      const notification = await this.notificationTokenRepo.findOne({
-        where: { user: { id }, status: 'ACTIVE' },
+    const notification = await this.notificationTokenRepo.findOne({
+      where: { user: { id }, status: 'ACTIVE' },
+    });
+    if (notification) {
+      await this.notificationsRepo.save({
+        notification_token: notification,
+        title,
+        body,
+        status: 'ACTIVE',
+        created_by: id,
       });
-      console.log({notification})
-      if (notification) {
-        await this.notificationsRepo.save({
-          notification_token: notification,
-          title,
-          body,
-          status: 'ACTIVE',
-          created_by: id,
+      await firebase
+        .messaging()
+        .send({
+          notification: { title, body },
+          token: notification.notification_token,
+          android: { priority: 'high' },
+          data: additionalData,
+        })
+        .catch((error: any) => {
+          console.error(error);
         });
-        let result = await firebase
-          .messaging()
-          .send({
-            notification: { title, body },
-            token: notification.notification_token,
-            android: { priority: 'high' },
-            data: additionalData,
-          })
-          .catch((error: any) => {
-            console.error(error);
-          });
-        console.log("result before");
-        console.log({ result });
-        console.log("result after");
-      }
-    } catch (error) {
-      console.error(error);
     }
   };
 }

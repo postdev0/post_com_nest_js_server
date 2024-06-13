@@ -67,7 +67,7 @@ export class FollowService {
       followingId,
       'Follow update',
       `@${userFollower.username} started following you`,
-      { followerId },
+      { notificationData: { notificationType: 'follow', data: followerId } },
     );
     return { follow: true };
   }
