@@ -88,7 +88,7 @@ export class NotificationService {
         status: 'ACTIVE',
         created_by: id,
       });
-      await firebase
+      let res = await firebase
         .messaging()
         .send({
           notification: { title, body },
@@ -99,6 +99,7 @@ export class NotificationService {
         .catch((error: any) => {
           console.error(error);
         });
+        console.log({res})
     }
   };
 }

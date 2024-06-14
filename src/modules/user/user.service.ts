@@ -99,10 +99,7 @@ export class UserService {
   }
 
   async getById(id: string, selfId: string) {
-    const isBlocked = await this.blockService.isBlocked(
-      { id } as User,
-      { id: selfId } as User,
-    );
+    const isBlocked = await this.blockService.isBlocked(id, selfId);
     if (isBlocked) {
       throw new ForbiddenException('You are blocked by this user.');
     }
@@ -145,10 +142,7 @@ export class UserService {
 
     if (!user) throw new NotFoundException('User not found');
     let id = user.id;
-    const isBlocked = await this.blockService.isBlocked(
-      { id } as User,
-      { id } as User,
-    );
+    const isBlocked = await this.blockService.isBlocked(id, id);
     if (isBlocked) {
       throw new ForbiddenException('You are blocked by this user.');
     }

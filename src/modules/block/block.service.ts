@@ -31,11 +31,11 @@ export class BlockService {
     await this.blockedUserRepository.delete({ blocker, blocked });
   }
 
-  async isBlocked(blocker: User, blocked: User): Promise<boolean> {
+  async isBlocked(blockerId: string, blockedId: string): Promise<boolean> {
     const blockedUser = await this.blockedUserRepository.findOne({
       where: {
-        blocker: { id: blocker.id },
-        blocked: { id: blocked.id },
+        blocker: { id: blockerId },
+        blocked: { id: blockedId },
       },
     });
     return !!blockedUser;
