@@ -95,16 +95,15 @@ export class CommentService {
     await this.tweetRepository.save(tweet);
     let result = await this.commentRepository.save(comment);
     if (result) {
+      let notificationData = {
+        notificationType: 'comment',
+        data: tweetObject,
+      };
       this.sendPushNotification(
         tweet.user.id,
         'Comment update',
         `@${user.username} has commented on your tweet`,
-        {
-          notificationData: {
-            notificationType: 'comment',
-            data: JSON.stringify(tweetObject),
-          },
-        },
+        JSON.stringify(notificationData),
       );
     }
     return result;

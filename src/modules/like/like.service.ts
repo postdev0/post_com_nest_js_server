@@ -89,16 +89,16 @@ export class LikeService {
       foundedTweet.likesCount++;
       foundedTweet.likes.push(newLike);
       await this.tweetRepository.save(foundedTweet);
+      let notificationData = {
+        notificationType: 'like',
+        data: tweetObject,
+      };
+
       this.sendPushNotification(
         foundedTweet.user.id,
         'Like update',
         `@${user.username} has liked on your tweet`,
-        {
-          notificationData: {
-            notificationType: 'like',
-            data: JSON.stringify(tweetObject),
-          },
-        },
+        JSON.stringify(notificationData),
       );
       return { like: true };
     }

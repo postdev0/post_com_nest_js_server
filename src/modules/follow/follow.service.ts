@@ -63,11 +63,15 @@ export class FollowService {
     userFollowing.followerCount++;
     await this.followRepository.save(follow);
     await this.userRepository.save([userFollower, userFollowing]);
+    let notificationData = {
+      notificationType: 'follow',
+      data: followerId,
+    };
     this.sendPushNotification(
       followingId,
       'Follow update',
       `@${userFollower.username} started following you`,
-      { notificationData: { notificationType: 'follow', data: followerId } },
+      JSON.stringify(notificationData),
     );
     return { follow: true };
   }
