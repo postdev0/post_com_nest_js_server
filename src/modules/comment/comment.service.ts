@@ -103,7 +103,7 @@ export class CommentService {
         tweet.user.id,
         'Comment update',
         `@${user.username} has commented on your tweet`,
-        JSON.stringify(notificationData),
+        { notificationData: JSON.stringify(notificationData) },
       );
     }
     return result;
