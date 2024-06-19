@@ -12,6 +12,7 @@ import { Follow } from '../follow/entities/follow.entity';
 import { TweetsList } from '../../base/interface';
 import { getUpdateObjectByAction } from '../../common/action-update';
 import { extractTaggedUsers } from '../../common/common';
+import { FollowService } from '../follow/follow.service';
 
 @Injectable()
 export class TweetService {
@@ -26,6 +27,7 @@ export class TweetService {
     private readonly bookmarkService: BookmarkService,
     private readonly commentService: CommentService,
     private readonly s3Service: S3Service,
+    private readonly followService: FollowService,
   ) {}
 
   async create(dto: any, user: any, media?: any[]): Promise<any> {
@@ -90,6 +92,10 @@ export class TweetService {
         tweet,
         selfId,
       ),
+      isFollowingToOwner: await this.followService.isMyFollowing(
+        tweet.user.id,
+        selfId,
+      ),
       userId: tweet.user.id,
       username: tweet.user.username,
       fullName: tweet.user.fullName,
@@ -138,6 +144,10 @@ export class TweetService {
           ),
           selfBookmarked: await this.bookmarkService.isTweetBookmarkedByUser(
             tweet,
+            selfId,
+          ),
+          isFollowingToOwner: await this.followService.isMyFollowing(
+            tweet.user.id,
             selfId,
           ),
           userId: tweet.user.id,
@@ -314,6 +324,10 @@ export class TweetService {
           ),
           selfBookmarked: await this.bookmarkService.isTweetBookmarkedByUser(
             tweet,
+            selfId,
+          ),
+          isFollowingToOwner: await this.followService.isMyFollowing(
+            tweet.user.id,
             selfId,
           ),
           userId: tweet.user.id,

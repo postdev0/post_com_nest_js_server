@@ -52,6 +52,7 @@ export interface UsersList {
   verified: boolean;
   isFollowing: boolean;
   isFollower: boolean;
+  isBlocked: boolean;
 }
 
 export interface TweetsList {
@@ -72,6 +73,7 @@ export interface TweetsList {
   selfRetweeted: boolean;
   selfCommented: boolean;
   selfBookmarked: boolean;
+  isFollowingToOwner: boolean;
   userId: string;
   username: string;
   fullName: string;

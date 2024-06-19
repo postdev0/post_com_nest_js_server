@@ -100,14 +100,39 @@ export class UserService {
 
   async getById(id: string, selfId: string) {
     const isBlocked = await this.blockService.isBlocked(id, selfId);
-    if (isBlocked) {
-      throw new ForbiddenException('You are blocked by this user.');
-    }
-
     let user = await this.userRepository.findOne({
       where: { id },
       relations: ['interests'],
     });
+
+    if (isBlocked) {
+      return {
+        id: user.id,
+        fullName: user.fullName,
+        username: user.username,
+        email: '',
+        role: '',
+        interests: '',
+        avatar: user.avatar,
+        cover: user.cover,
+        bio: '',
+        dob: '',
+        status: '',
+        verified: user.verified,
+        ssoLogin: '',
+        followerCount: '',
+        followingCount: '',
+        isFollowing: '',
+        isFollower: '',
+        isBlocked: '',
+        postCount: '',
+        lastSeen: '',
+        createdAt: '',
+        modifiedAt: '',
+        message: `You are blocked from following @${user.username} and viewing @${user.username}'s posts`,
+      };
+    }
+
     if (!user) throw new NotFoundException('User not found');
     return {
       id: user.id,
@@ -127,6 +152,7 @@ export class UserService {
       followingCount: user.followingCount,
       isFollowing: await this.followService.isMyFollowing(id, selfId),
       isFollower: await this.followService.isMyFollower(id, selfId),
+      isBlocked: await this.blockService.isBlocked(id, selfId),
       postCount: user.postCount,
       lastSeen: user.lastSeen,
       createdAt: user.createdAt,
@@ -144,7 +170,31 @@ export class UserService {
     let id = user.id;
     const isBlocked = await this.blockService.isBlocked(id, id);
     if (isBlocked) {
-      throw new ForbiddenException('You are blocked by this user.');
+      return {
+        id: user.id,
+        fullName: user.fullName,
+        username: user.username,
+        email: '',
+        role: '',
+        interests: '',
+        avatar: user.avatar,
+        cover: user.cover,
+        bio: '',
+        dob: '',
+        status: '',
+        verified: user.verified,
+        ssoLogin: '',
+        followerCount: '',
+        followingCount: '',
+        isFollowing: '',
+        isFollower: '',
+        isBlocked: '',
+        postCount: '',
+        lastSeen: '',
+        createdAt: '',
+        modifiedAt: '',
+        message: `You are blocked from following @${user.username} and viewing @${user.username}'s posts`,
+      };
     }
     return {
       id: user.id,
@@ -164,6 +214,7 @@ export class UserService {
       followingCount: user.followingCount,
       isFollowing: await this.followService.isMyFollowing(id, selfId),
       isFollower: await this.followService.isMyFollower(id, selfId),
+      isBlocked: await this.blockService.isBlocked(id, selfId),
       postCount: user.postCount,
       lastSeen: user.lastSeen,
       createdAt: user.createdAt,
@@ -293,6 +344,10 @@ export class UserService {
           tweet,
           selfId,
         ),
+        isFollowingToOwner: await this.followService.isMyFollowing(
+          tweet.user.id,
+          selfId,
+        ),
         userId: tweet.user.id,
         username: tweet.user.username,
         fullName: tweet.user.fullName,
@@ -344,6 +399,10 @@ export class UserService {
           ),
           selfCommented: await this.commentService.isTweetCommentedByUser(
             l.tweet,
+            selfId,
+          ),
+          isFollowingToOwner: await this.followService.isMyFollowing(
+            l.tweet.user.id,
             selfId,
           ),
           userId: l.tweet.user.id,
@@ -400,6 +459,10 @@ export class UserService {
             r.tweet,
             selfId,
           ),
+          isFollowingToOwner: await this.followService.isMyFollowing(
+            r.tweet.user.id,
+            selfId,
+          ),
           userId: r.tweet.user.id,
           username: r.tweet.user.username,
           fullName: r.tweet.user.fullName,
@@ -453,6 +516,10 @@ export class UserService {
           ),
           selfCommented: await this.commentService.isTweetCommentedByUser(
             b.tweet,
+            selfId,
+          ),
+          isFollowingToOwner: await this.followService.isMyFollowing(
+            b.tweet.user.id,
             selfId,
           ),
           userId: b.tweet.user.id,
@@ -516,6 +583,10 @@ export class UserService {
             c.tweet,
             selfId,
           ),
+          tweet_isFollowingToOwner: await this.followService.isMyFollowing(
+            c.tweet.user.id,
+            selfId,
+          ),
           tweet_userId: c.tweet.user.id,
           tweet_username: c.tweet.user.username,
           tweet_fullName: c.tweet.user.fullName,
@@ -560,7 +631,15 @@ export class UserService {
     );
   };
 
-  getPushNotifications = async (): Promise<any> => {
-    return await this.notificationService.getNotifications();
+  getPushNotifications = async (
+    id: string,
+    page: number = 1,
+    pageSize: number = 10,
+  ): Promise<any> => {
+    return await this.notificationService.getNotificationsByUser(
+      id,
+      page,
+      pageSize,
+    );
   };
 }

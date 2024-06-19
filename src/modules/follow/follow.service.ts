@@ -5,6 +5,7 @@ import { Follow } from './entities/follow.entity';
 import { User } from '../user/entities/user.entity';
 import { UsersList } from '../../base/interface';
 import { NotificationService } from '../notification/notification.service';
+import { BlockService } from '../block/block.service';
 @Injectable()
 export class FollowService {
   constructor(
@@ -12,16 +13,24 @@ export class FollowService {
     private readonly followRepository: Repository<Follow>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly notificationService: NotificationService,
+    private readonly blockService: BlockService,
   ) {}
 
   async sendPushNotification(
     id: string,
+    notificationType: string,
     title: string,
     message: string,
     data?: any,
   ) {
     try {
-      await this.notificationService.sendPush(id, title, message, data);
+      await this.notificationService.sendPush(
+        id,
+        notificationType,
+        title,
+        message,
+        data,
+      );
     } catch (e) {
       console.log('Error sending push notification', e);
     }
@@ -69,6 +78,7 @@ export class FollowService {
     };
     this.sendPushNotification(
       followingId,
+      'follow',
       'Follow update',
       `@${userFollower.username} started following you`,
       { notificationData: JSON.stringify(notificationData) },
@@ -101,6 +111,7 @@ export class FollowService {
           verified: u.follower.verified,
           isFollowing,
           isFollower,
+          isBlocked: await this.blockService.isBlocked(u.follower.id, selfId),
         };
       }),
     ).then((result) => result.filter(Boolean));
@@ -133,6 +144,7 @@ export class FollowService {
           verified: u.following.verified,
           isFollowing,
           isFollower,
+          isBlocked: await this.blockService.isBlocked(u.following.id, selfId),
         };
       }),
     ).then((result) => result.filter(Boolean));
@@ -183,6 +195,7 @@ export class FollowService {
           verified: u.follower.verified,
           isFollowing,
           isFollower,
+          isBlocked: await this.blockService.isBlocked(u.follower.id, selfId),
         };
       }),
     ).then((result) => result.filter(Boolean));
@@ -233,6 +246,7 @@ export class FollowService {
           verified: u.following.verified,
           isFollowing,
           isFollower,
+          isBlocked: await this.blockService.isBlocked(u.following.id, selfId),
         };
       }),
     ).then((result) => result.filter(Boolean));

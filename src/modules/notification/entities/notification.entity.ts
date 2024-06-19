@@ -1,13 +1,9 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { NotificationToken } from './notification-token.entity';
+import { BaseEntity } from '../../../base/base.entity';
 
 @Entity()
-export class Notification {
+export class Notification extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -16,6 +12,11 @@ export class Notification {
     (notificationToken) => notificationToken.notifications,
   )
   notification_token: NotificationToken;
+
+  @Column({
+    default: '',
+  })
+  notificationType: string;
 
   @Column()
   title: string;
@@ -30,4 +31,9 @@ export class Notification {
     default: 'ACTIVE',
   })
   status: string;
+
+  @Column({
+    default: '',
+  })
+  additionalData: string;
 }

@@ -8,6 +8,7 @@ import { FollowService } from '../follow/follow.service';
 import { UsersList } from '../../base/interface';
 import { NotificationService } from '../notification/notification.service';
 import { CommonService } from '../common/commonService';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class LikeService {
@@ -17,16 +18,24 @@ export class LikeService {
     private readonly followService: FollowService,
     private readonly notificationService: NotificationService,
     private readonly commonService: CommonService,
+    private readonly blockService: BlockService,
   ) {}
 
   async sendPushNotification(
     id: string,
+    notificationType: string,
     title: string,
     message: string,
     data?: any,
   ) {
     try {
-      await this.notificationService.sendPush(id, title, message, data);
+      await this.notificationService.sendPush(
+        id,
+        notificationType,
+        title,
+        message,
+        data,
+      );
     } catch (e) {
       console.log('Error sending push notification', e);
     }
@@ -96,6 +105,7 @@ export class LikeService {
 
       this.sendPushNotification(
         foundedTweet.user.id,
+        "like",
         'Like update',
         `@${user.username} has liked on your tweet`,
         { notificationData: JSON.stringify(notificationData) },
@@ -140,6 +150,7 @@ export class LikeService {
             verified: u.user.verified,
             isFollowing,
             isFollower,
+            isBlocked: await this.blockService.isBlocked(u.user.id, selfId),
           };
         }
       }),

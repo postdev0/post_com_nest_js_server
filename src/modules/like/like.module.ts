@@ -7,6 +7,7 @@ import { Like } from './entities/like.entity';
 import { FollowModule } from '../follow/follow.module';
 import { NotificationModule } from '../notification/notification.module';
 import { CommonModule } from '../common/commonModule';
+import { BlockModule } from '../block/block.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CommonModule } from '../common/commonModule';
     FollowModule,
     NotificationModule,
     CommonModule,
+    BlockModule,
   ],
   controllers: [LikeController],
   providers: [LikeService],

@@ -6,6 +6,7 @@ import { Tweet } from '../tweet/entities/tweet.entity';
 import { User } from '../user/entities/user.entity';
 import { FollowService } from '../follow/follow.service';
 import { UsersList } from '../../base/interface';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class BookmarkService {
@@ -15,6 +16,7 @@ export class BookmarkService {
     @InjectRepository(Bookmark)
     private readonly bookmarkRepository: Repository<Bookmark>,
     private readonly followService: FollowService,
+    private readonly blockService: BlockService,
   ) {}
 
   async addRemoveBookmark(dto: any, user: User): Promise<any> {
@@ -87,6 +89,7 @@ export class BookmarkService {
             verified: u.user.verified,
             isFollowing,
             isFollower,
+            isBlocked: await this.blockService.isBlocked(u.user.id, selfId),
           };
         }
       }),

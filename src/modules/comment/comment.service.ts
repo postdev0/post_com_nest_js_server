@@ -24,12 +24,19 @@ export class CommentService {
 
   async sendPushNotification(
     id: string,
+    notificationType: string,
     title: string,
     message: string,
     data?: any,
   ) {
     try {
-      await this.notificationService.sendPush(id, title, message, data);
+      await this.notificationService.sendPush(
+        id,
+        notificationType,
+        title,
+        message,
+        data,
+      );
     } catch (e) {
       console.log('Error sending push notification', e);
     }
@@ -101,6 +108,7 @@ export class CommentService {
       };
       this.sendPushNotification(
         tweet.user.id,
+        'comment',
         'Comment update',
         `@${user.username} has commented on your tweet`,
         { notificationData: JSON.stringify(notificationData) },

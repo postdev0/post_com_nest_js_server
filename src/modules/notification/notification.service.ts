@@ -67,26 +67,47 @@ export class NotificationService {
     }
   };
 
-  getNotifications = async (): Promise<any> => {
-    return await this.notificationsRepo.find();
+  getNotificationsByUser = async (
+    id: string,
+    page: number = 1,
+    pageSize: number = 10,
+  ): Promise<any> => {
+    return await this.notificationsRepo.findAndCount({
+      where: { created_by: id },
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
   };
 
   sendPush = async (
     id: string,
+    notificationType: string,
     title: string,
     body: string,
-    additionalData?: Record<string, any>,
+    additionalData: any = {},
   ): Promise<void> => {
     const notification = await this.notificationTokenRepo.findOne({
       where: { user: { id }, status: 'ACTIVE' },
+    });
+    console.log({
+      notification_token: notification,
+      title,
+      body,
+      notificationType,
+      status: 'ACTIVE',
+      created_by: id,
+      additionalData: additionalData.notificationData,
     });
     if (notification) {
       await this.notificationsRepo.save({
         notification_token: notification,
         title,
         body,
+        notificationType,
         status: 'ACTIVE',
         created_by: id,
+        additionalData: additionalData.notificationData,
       });
       let res = await firebase
         .messaging()
@@ -99,7 +120,7 @@ export class NotificationService {
         .catch((error: any) => {
           console.error(error);
         });
-        console.log({res})
+      console.log({ res });
     }
   };
 }

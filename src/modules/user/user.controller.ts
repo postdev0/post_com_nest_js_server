@@ -318,14 +318,28 @@ export class UserController {
   }
 
   @Get('push/notifications')
+  @UseGuards(JwtAuthGuard)
   async fetchPushNotifications(
     @Req() request: Request,
     @Res() response: Response,
+    @Query(RoutesConstants.PAGE) page: number = 1,
+    @Query(RoutesConstants.PAGESIZE) pageSize: number = 10,
   ) {
     try {
-      let result = await this.userService.getPushNotifications();
-      successResponse(response, result);
+      let [result, count] = await this.userService.getPushNotifications(
+        (request.user as any).id,
+        page,
+        pageSize,
+      );
+
+      result.map((r: any) => {
+        if (r.additionalData) {
+          r.additionalData = JSON.parse(r.additionalData);
+        }
+      });
+      successPaginatedResponse(response, result, count, page, pageSize);
     } catch (error: any) {
+      console.log(error);
       errorResponse(response, error.message);
     }
   }

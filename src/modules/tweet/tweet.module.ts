@@ -14,6 +14,7 @@ import { User } from '../user/entities/user.entity';
 import { CommentModule } from '../comment/comment.module';
 import { Interest } from '../interest/entities/interest.entity';
 import { Follow } from '../follow/entities/follow.entity';
+import { FollowModule } from '../follow/follow.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { Follow } from '../follow/entities/follow.entity';
     RetweetModule,
     BookmarkModule,
     CommentModule,
+    FollowModule,
   ],
   controllers: [TweetController],
   providers: [TweetService],

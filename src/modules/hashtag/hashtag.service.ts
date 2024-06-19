@@ -8,6 +8,7 @@ import { RetweetService } from '../retweet/retweet.service';
 import { BookmarkService } from '../bookmark/bookmark.service';
 import { CommentService } from '../comment/comment.service';
 import { TweetsList } from '../../base/interface';
+import { FollowService } from '../follow/follow.service';
 
 @Injectable()
 export class HashtagService {
@@ -20,6 +21,7 @@ export class HashtagService {
     private readonly retweetService: RetweetService,
     private readonly bookmarkService: BookmarkService,
     private readonly commentService: CommentService,
+    private readonly followService: FollowService,
   ) {}
 
   async getAll(page: number = 1, pageSize: number = 10) {
@@ -76,7 +78,12 @@ export class HashtagService {
   ): Promise<TweetsList[]> {
     let hashtags = await this.hashtagRepository.find({
       where: { name: ILike(`%${name.toLowerCase()}%`) },
-      relations: ['tweets', 'tweets.interests', 'tweets.hashtags'],
+      relations: [
+        'tweets',
+        'tweets.user',
+        'tweets.interests',
+        'tweets.hashtags',
+      ],
     });
 
     let result = await Promise.all(
@@ -109,10 +116,14 @@ export class HashtagService {
               tweet,
               selfId,
             ),
-            userId: tweet.userId,
-            username: tweet.username,
-            fullName: tweet.fullName,
-            avatar: tweet.avatar,
+            isFollowingToOwner: await this.followService.isMyFollowing(
+              tweet.user.id,
+              selfId,
+            ),
+            userId: tweet.user.id,
+            username: tweet.user.username,
+            fullName: tweet.user.fullName,
+            avatar: tweet.user.avatar,
             createdAt: tweet.createdAt,
             modifiedAt: tweet.modifiedAt,
           })),
@@ -177,6 +188,10 @@ export class HashtagService {
             ),
             selfCommented: await this.commentService.isTweetCommentedByUser(
               tweet,
+              selfId,
+            ),
+            isFollowingToOwner: await this.followService.isMyFollowing(
+              tweet.user.id,
               selfId,
             ),
             userId: tweet.user.id,

@@ -4,12 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { FollowService } from '../follow/follow.service';
 import { UsersList } from '../../base/interface';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class FeedService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private readonly followService: FollowService,
+    private readonly blockService: BlockService,
   ) {}
   async searchUsersByUsername(
     username: string,
@@ -39,6 +41,7 @@ export class FeedService {
             verified: u.verified,
             isFollowing,
             isFollower,
+            isBlocked: await this.blockService.isBlocked(u.id, selfId),
           };
         }
       }),
@@ -78,6 +81,7 @@ export class FeedService {
             verified: u.verified,
             isFollowing,
             isFollower,
+            isBlocked: await this.blockService.isBlocked(u.id, selfId),
           };
         }
       }),

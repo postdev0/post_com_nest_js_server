@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
 import { FollowService } from '../follow/follow.service';
 import { UsersList } from '../../base/interface';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class RetweetService {
@@ -13,6 +14,7 @@ export class RetweetService {
     @InjectRepository(Tweet) private tweetRepository: Repository<Tweet>,
     @InjectRepository(Retweet) private retweetRepository: Repository<Retweet>,
     private readonly followService: FollowService,
+    private readonly blockService: BlockService,
   ) {}
 
   async addRemoveRetweet(dto: any, user: User): Promise<any> {
@@ -84,6 +86,7 @@ export class RetweetService {
             verified: u.user.verified,
             isFollowing,
             isFollower,
+            isBlocked: await this.blockService.isBlocked(u.user.id, selfId),
           };
         }
       }),
