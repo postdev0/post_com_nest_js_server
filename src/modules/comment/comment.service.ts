@@ -104,6 +104,7 @@ export class CommentService {
     if (result) {
       let notificationData = {
         notificationType: 'comment',
+        userAvator: user.avatar,
         data: tweetObject,
       };
       this.sendPushNotification(

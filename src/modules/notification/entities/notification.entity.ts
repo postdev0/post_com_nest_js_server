@@ -33,7 +33,7 @@ export class Notification extends BaseEntity {
   status: string;
 
   @Column({
-    default: '',
+    default: null,
   })
   additionalData: string;
 }

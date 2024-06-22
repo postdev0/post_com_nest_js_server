@@ -100,12 +100,13 @@ export class LikeService {
       await this.tweetRepository.save(foundedTweet);
       let notificationData = {
         notificationType: 'like',
+        userAvator: user.avatar,
         data: tweetObject,
       };
 
       this.sendPushNotification(
         foundedTweet.user.id,
-        "like",
+        'like',
         'Like update',
         `@${user.username} has liked on your tweet`,
         { notificationData: JSON.stringify(notificationData) },

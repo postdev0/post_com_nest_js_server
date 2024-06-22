@@ -74,6 +74,7 @@ export class FollowService {
     await this.userRepository.save([userFollower, userFollowing]);
     let notificationData = {
       notificationType: 'follow',
+      userAvator: userFollower.avatar,
       data: followerId,
     };
     this.sendPushNotification(
