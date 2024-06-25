@@ -74,6 +74,7 @@ export interface TweetsList {
   selfCommented: boolean;
   selfBookmarked: boolean;
   isFollowingToOwner: boolean;
+  isOwnerBlocked: boolean;
   userId: string;
   username: string;
   fullName: string;
@@ -131,6 +132,8 @@ export interface UserCommentedTweetsList {
   tweet_selfRetweeted: boolean;
   tweet_selfCommented: boolean;
   tweet_selfBookmarked: boolean;
+  tweet_isFollowingToOwner: boolean;
+  tweet_isOwnerBlocked:boolean;
   tweet_userId:string;
   tweet_username:string;
   tweet_fullName:string;

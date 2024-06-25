@@ -1,8 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
+import { BaseEntity } from '../../../base/base.entity';
 
 @Entity()
-export class BlockedUser {
+export class BlockedUser extends BaseEntity{
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

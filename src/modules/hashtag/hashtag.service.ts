@@ -9,6 +9,7 @@ import { BookmarkService } from '../bookmark/bookmark.service';
 import { CommentService } from '../comment/comment.service';
 import { TweetsList } from '../../base/interface';
 import { FollowService } from '../follow/follow.service';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class HashtagService {
@@ -22,6 +23,7 @@ export class HashtagService {
     private readonly bookmarkService: BookmarkService,
     private readonly commentService: CommentService,
     private readonly followService: FollowService,
+    private readonly blockService: BlockService,
   ) {}
 
   async getAll(page: number = 1, pageSize: number = 10) {
@@ -120,6 +122,7 @@ export class HashtagService {
               tweet.user.id,
               selfId,
             ),
+            isOwnerBlocked: await this.blockService.isBlocked(tweet.user.id, selfId),
             userId: tweet.user.id,
             username: tweet.user.username,
             fullName: tweet.user.fullName,
@@ -194,6 +197,7 @@ export class HashtagService {
               tweet.user.id,
               selfId,
             ),
+            isOwnerBlocked: await this.blockService.isBlocked(tweet.user.id, selfId),
             userId: tweet.user.id,
             username: tweet.user.username,
             fullName: tweet.user.fullName,

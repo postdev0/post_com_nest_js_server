@@ -26,7 +26,7 @@ export class BlockService {
     const blockedUser = this.blockedUserRepository.create({ blocker, blocked });
     return this.blockedUserRepository.save(blockedUser);
   }
-  
+
   async unblockUser(blocker: User, blocked: User): Promise<void> {
     await this.blockedUserRepository.delete({ blocker, blocked });
   }
@@ -39,6 +39,25 @@ export class BlockService {
       },
     });
     return !!blockedUser;
+  }
+
+  async allBlockedUsers(
+    blocker: User,
+    page: number = 1,
+    pageSize: number = 10,
+  ): Promise<any> {
+    const [result, count] = await this.blockedUserRepository.findAndCount(
+      {
+        where: {
+          blocker: { id: blocker.id },
+        },
+        relations: ['blocker', 'blocked'],
+        order: { createdAt: 'DESC' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      },
+    );
+    return { result, count };
   }
 
   async findUserById(id: string): Promise<User> {

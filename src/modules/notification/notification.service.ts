@@ -90,15 +90,6 @@ export class NotificationService {
     const notification = await this.notificationTokenRepo.findOne({
       where: { user: { id }, status: 'ACTIVE' },
     });
-    console.log({
-      notification_token: notification,
-      title,
-      body,
-      notificationType,
-      status: 'ACTIVE',
-      created_by: id,
-      additionalData: additionalData.notificationData,
-    });
     if (notification) {
       await this.notificationsRepo.save({
         notification_token: notification,
@@ -109,7 +100,7 @@ export class NotificationService {
         created_by: id,
         additionalData: additionalData.notificationData,
       });
-      let res = await firebase
+      await firebase
         .messaging()
         .send({
           notification: { title, body },
@@ -120,7 +111,6 @@ export class NotificationService {
         .catch((error: any) => {
           console.error(error);
         });
-      console.log({ res });
     }
   };
 }

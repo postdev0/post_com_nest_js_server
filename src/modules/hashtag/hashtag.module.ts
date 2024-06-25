@@ -9,6 +9,7 @@ import { RetweetModule } from '../retweet/retweet.module';
 import { BookmarkModule } from '../bookmark/bookmark.module';
 import { CommentModule } from '../comment/comment.module';
 import { FollowModule } from '../follow/follow.module';
+import { BlockModule } from '../block/block.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { FollowModule } from '../follow/follow.module';
     BookmarkModule,
     CommentModule,
     FollowModule,
+    BlockModule,
   ],
   controllers: [HashtagController],
   providers: [HashtagService],

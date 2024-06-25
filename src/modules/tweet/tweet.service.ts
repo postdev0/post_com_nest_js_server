@@ -13,6 +13,7 @@ import { TweetsList } from '../../base/interface';
 import { getUpdateObjectByAction } from '../../common/action-update';
 import { extractTaggedUsers } from '../../common/common';
 import { FollowService } from '../follow/follow.service';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class TweetService {
@@ -28,6 +29,7 @@ export class TweetService {
     private readonly commentService: CommentService,
     private readonly s3Service: S3Service,
     private readonly followService: FollowService,
+    private readonly blockService: BlockService,
   ) {}
 
   async create(dto: any, user: any, media?: any[]): Promise<any> {
@@ -96,6 +98,7 @@ export class TweetService {
         tweet.user.id,
         selfId,
       ),
+      isOwnerBlocked: await this.blockService.isBlocked(tweet.user.id, selfId),
       userId: tweet.user.id,
       username: tweet.user.username,
       fullName: tweet.user.fullName,
@@ -150,6 +153,7 @@ export class TweetService {
             tweet.user.id,
             selfId,
           ),
+          isOwnerBlocked: await this.blockService.isBlocked(tweet.user.id, selfId),
           userId: tweet.user.id,
           username: tweet.user.username,
           fullName: tweet.user.fullName,
@@ -330,6 +334,7 @@ export class TweetService {
             tweet.user.id,
             selfId,
           ),
+          isOwnerBlocked: await this.blockService.isBlocked(tweet.user.id, selfId),
           userId: tweet.user.id,
           username: tweet.user.username,
           fullName: tweet.user.fullName,
