@@ -18,7 +18,7 @@ import { UpdateCommentDto } from './dto/update.dto';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { RoutesConstants } from 'src/constants/routes.constant';
+import { RoutesConstants } from '../../constants/routes.constant';
 import {
   errorResponse,
   successPaginatedResponse,

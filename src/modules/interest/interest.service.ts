@@ -13,7 +13,7 @@ import {
   InterestsUsersList,
   TweetsList,
   UsersList,
-} from 'src/base/interface';
+} from '../../base/interface';
 import { LikeService } from '../like/like.service';
 import { RetweetService } from '../retweet/retweet.service';
 import { BookmarkService } from '../bookmark/bookmark.service';

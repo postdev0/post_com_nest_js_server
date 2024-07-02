@@ -322,12 +322,14 @@ export class UserController {
   async fetchPushNotifications(
     @Req() request: Request,
     @Res() response: Response,
+    @Query('notificationType') notificationType: string,
     @Query(RoutesConstants.PAGE) page: number = 1,
     @Query(RoutesConstants.PAGESIZE) pageSize: number = 10,
   ) {
     try {
       let [result, count] = await this.userService.getPushNotifications(
         (request.user as any).id,
+        notificationType,
         page,
         pageSize,
       );

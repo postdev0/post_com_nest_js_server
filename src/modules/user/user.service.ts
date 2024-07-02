@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { In, Repository } from 'typeorm';
-import { getUpdateObjectByAction } from 'src/common/action-update';
+import { Repository } from 'typeorm';
+import { getUpdateObjectByAction } from '../../common/action-update';
 import { ChangePasswordDto, PasswordDto, UsernameDto } from './dto/update.dto';
 import * as bcrypt from 'bcryptjs';
 import { LikeService } from '../like/like.service';
@@ -638,11 +638,13 @@ export class UserService {
 
   getPushNotifications = async (
     id: string,
+    notificationType:string,
     page: number = 1,
     pageSize: number = 10,
   ): Promise<any> => {
     return await this.notificationService.getNotificationsByUser(
       id,
+      notificationType,
       page,
       pageSize,
     );

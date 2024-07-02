@@ -13,7 +13,7 @@ import { S3Service } from './s3.service';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express, Request, Response } from 'express';
-import { errorResponse, successResponse } from 'src/base/response';
+import { errorResponse, successResponse } from '../../base/response';
 
 @Controller('file')
 export class S3Controller {

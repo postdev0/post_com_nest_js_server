@@ -69,11 +69,12 @@ export class NotificationService {
 
   getNotificationsByUser = async (
     id: string,
+    notificationType: string,
     page: number = 1,
     pageSize: number = 10,
   ): Promise<any> => {
     return await this.notificationsRepo.findAndCount({
-      where: { created_by: id },
+      where: { created_by: id, notificationType },
       order: { createdAt: 'DESC' },
       skip: (page - 1) * pageSize,
       take: pageSize,

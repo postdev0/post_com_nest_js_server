@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { RoutesConstants } from 'src/constants/routes.constant';
+import { RoutesConstants } from '../../constants/routes.constant';
 import { TweetService } from './tweet.service';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
