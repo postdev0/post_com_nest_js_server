@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '../../../base/base.entity';
 import { User } from '../../user/entities/user.entity';
 import { Tweet } from '../../tweet/entities/tweet.entity';
+import { Reply } from '../../Reply/entities/reply.entity';
 
 @Entity()
 export class Comment extends BaseEntity {
@@ -14,6 +15,9 @@ export class Comment extends BaseEntity {
   @ManyToOne(() => Tweet, (tweet) => tweet.comments)
   tweet: Tweet;
 
+  @OneToMany(() => Reply, (reply) => reply.comment)
+  replies: Reply[];
+
   @Column()
   text: string;
 
@@ -22,4 +26,11 @@ export class Comment extends BaseEntity {
 
   @Column('boolean', { default: false })
   isEdited: boolean;
+
+  @Column('int', { default: 0 })
+  likesCount: number;
+
+  @ManyToMany(() => User, (user) => user.likedComments)
+  @JoinTable()
+  likedBy: User[];
 }

@@ -7,10 +7,11 @@ import { S3Module } from '../s3/s3.module';
 import { Tweet } from '../tweet/entities/tweet.entity';
 import { NotificationModule } from '../notification/notification.module';
 import { CommonModule } from '../common/commonModule';
+import { User } from '../user/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Comment, Tweet]),
+    TypeOrmModule.forFeature([Comment, Tweet, User]),
     S3Module,
     NotificationModule,
     CommonModule,

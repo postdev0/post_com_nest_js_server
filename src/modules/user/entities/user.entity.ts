@@ -17,6 +17,7 @@ import { Interest } from '../../interest/entities/interest.entity';
 import { ROLES } from '../../../enums/role.enum';
 import { NotificationToken } from '../../notification/entities/notification-token.entity';
 import { BlockedUser } from '../../block/entities/block.entity';
+import { Reply } from '../../Reply/entities/reply.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -123,4 +124,14 @@ export class User extends BaseEntity {
 
   @OneToMany(() => BlockedUser, (blockedUser) => blockedUser.blocked)
   blockedByUsers: BlockedUser[];
+
+  @OneToMany(() => Reply, (reply) => reply.user)
+  replies: Reply[];
+
+  @ManyToMany(() => Comment, (comment) => comment.likedBy)
+  likedComments: Comment[];
+
+  @ManyToMany(() => Reply, (reply) => reply.likedBy)
+  likedReplies: Reply[];
+  
 }

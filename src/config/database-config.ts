@@ -13,6 +13,7 @@ import { Interest } from '../modules/interest/entities/interest.entity';
 import { Notification } from '../modules/notification/entities/notification.entity';
 import { NotificationToken } from '../modules/notification/entities/notification-token.entity';
 import { BlockedUser } from '../modules/block/entities/block.entity';
+import { Reply } from '../modules/Reply/entities/reply.entity';
 
 ConfigModule.forRoot();
 
@@ -59,6 +60,7 @@ export const databaseConfig: DataSourceOptions = {
     Notification,
     NotificationToken,
     BlockedUser,
+    Reply,
   ],
   ssl: {
     rejectUnauthorized: false,

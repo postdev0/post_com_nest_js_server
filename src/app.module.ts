@@ -17,6 +17,9 @@ import { InterestModule } from './modules/interest/interest.module';
 import { HashtagModule } from './modules/hashtag/hashtag.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { BlockModule } from './modules/block/block.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { ReplyModule } from './modules/Reply/reply.module';
 
 @Module({
   imports: [
@@ -37,8 +40,9 @@ import { BlockModule } from './modules/block/block.module';
     HashtagModule,
     NotificationModule,
     BlockModule,
+    ReplyModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

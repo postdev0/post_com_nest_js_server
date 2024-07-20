@@ -9,6 +9,7 @@ import { Tweet } from '../tweet/entities/tweet.entity';
 import { CommentsList } from '../../base/interface';
 import { NotificationService } from '../notification/notification.service';
 import { CommonService } from '../common/commonService';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class CommentService {
@@ -17,6 +18,8 @@ export class CommentService {
     private readonly commentRepository: Repository<Comment>,
     @InjectRepository(Tweet)
     private readonly tweetRepository: Repository<Tweet>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly s3Service: S3Service,
     private readonly notificationService: NotificationService,
     private readonly commonService: CommonService,
@@ -155,6 +158,7 @@ export class CommentService {
 
   async getAllCommentsOfTweet(
     tweetId: string,
+    selfId: string,
     page: number = 1,
     pageSize: number = 10,
   ): Promise<any> {
@@ -165,20 +169,24 @@ export class CommentService {
       take: pageSize,
     });
 
-    let result: CommentsList[] = comment.map((c: any) => {
-      return {
-        id: c.id,
-        text: c.text,
-        media: c.media,
-        isEdited: c.isEdited,
-        userId: c.user.id,
-        username: c.user.username,
-        fullName: c.user.fullName,
-        avatar: c.user.avatar,
-        createdAt: c.createdAt,
-        modifiedAt: c.modifiedAt,
-      };
-    });
+    let result: CommentsList[] = await Promise.all(
+      comment.map(async (c: any) => {
+        return {
+          id: c.id,
+          text: c.text,
+          media: c.media,
+          isEdited: c.isEdited,
+          isLiked: await this.isCommentLiked(selfId, c.id),
+          likesCount: c.likesCount,
+          userId: c.user.id,
+          username: c.user.username,
+          fullName: c.user.fullName,
+          avatar: c.user.avatar,
+          createdAt: c.createdAt,
+          modifiedAt: c.modifiedAt,
+        };
+      }),
+    );
 
     return { result, count };
   }
@@ -191,5 +199,57 @@ export class CommentService {
       },
     );
     return foundedComment ? true : false;
+  }
+
+  async likeComment(userId: string, commentId: string): Promise<Comment> {
+    const comment = await this.commentRepository.findOne({
+      where: { id: commentId },
+      relations: ['likedBy'],
+    });
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!comment || !user) {
+      throw new NotFoundException('Comment or User not found');
+    }
+
+    if (!comment.likedBy.some((likedUser) => likedUser.id === userId)) {
+      comment.likedBy.push(user);
+      comment.likesCount += 1;
+      await this.commentRepository.save(comment);
+    }
+
+    return comment;
+  }
+
+  async unlikeComment(userId: string, commentId: string): Promise<Comment> {
+    const comment = await this.commentRepository.findOne({
+      where: { id: commentId },
+      relations: ['likedBy'],
+    });
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!comment || !user) {
+      throw new NotFoundException('Comment or User not found');
+    }
+
+    comment.likedBy = comment.likedBy.filter(
+      (likedUser) => likedUser.id !== userId,
+    );
+    comment.likesCount = comment.likesCount
+      ? (comment.likesCount -= 1)
+      : comment.likesCount;
+    await this.commentRepository.save(comment);
+    return comment;
+  }
+
+  async isCommentLiked(userId: string, commentId: string): Promise<boolean> {
+    const comment = await this.commentRepository.findOne({
+      where: { id: commentId },
+      relations: ['likedBy'],
+    });
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+    return comment.likedBy.some((likedUser) => likedUser.id === userId);
   }
 }

@@ -1,0 +1,25 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.example.post_android.debug",
+    "sha256_cert_fingerprints":
+    ["64:E7:90:18:0F:1D:89:CE:02:6F:5C:21:54:8D:16:A7:D6:95:19:F5:D3:CD:FC:F7:44:FC:2E:E6:25:D7:99:AA"]
+  }
+},
+{
+  "relation": ["delegate_permission/common.get_login_creds"],
+  "target": {
+    "namespace": "web",
+    "site": "https://www.posst.in"
+  }
+},
+{
+  "relation": ["delegate_permission/common.get_login_creds"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.example.post_android.debug",
+    "sha256_cert_fingerprints":
+    ["64:E7:90:18:0F:1D:89:CE:02:6F:5C:21:54:8D:16:A7:D6:95:19:F5:D3:CD:FC:F7:44:FC:2E:E6:25:D7:99:AA"]
+  }
+}]

@@ -106,6 +106,8 @@ export interface CommentsList {
   text: string;
   media: string[];
   isEdited: boolean;
+  isLiked: boolean;
+  likesCount: number;
   userId: string;
   username: string;
   fullName: string;

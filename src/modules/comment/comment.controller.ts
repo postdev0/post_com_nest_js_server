@@ -11,6 +11,7 @@ import {
   UploadedFiles,
   Put,
   Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create.dto';
@@ -25,12 +26,12 @@ import {
   successResponse,
 } from '../../base/response';
 
+@UseGuards(JwtAuthGuard)
 @Controller('comments')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor('media', 10))
   async create(
     @Req() request: Request,
@@ -98,10 +99,62 @@ export class CommentController {
     try {
       let { result, count } = await this.commentService.getAllCommentsOfTweet(
         tweetId,
+        (request.user as any).id,
         page,
         pageSize,
       );
       successPaginatedResponse(response, result, count, page, pageSize);
+    } catch (error: any) {
+      errorResponse(response, error.message);
+    }
+  }
+
+  @Post(':commentId/like')
+  async likeComment(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Param('commentId', ParseUUIDPipe) commentId: string,
+  ): Promise<void> {
+    try {
+      let result = await this.commentService.likeComment(
+        (request.user as any).id,
+        commentId,
+      );
+      successResponse(response, result);
+    } catch (error: any) {
+      errorResponse(response, error.message);
+    }
+  }
+
+  @Post(':commentId/unlike')
+  async unlikeComment(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Param('commentId', ParseUUIDPipe) commentId: string,
+  ): Promise<void> {
+    try {
+      let result = await this.commentService.unlikeComment(
+        (request.user as any).id,
+        commentId,
+      );
+      successResponse(response, result);
+    } catch (error: any) {
+      errorResponse(response, error.message);
+    }
+  }
+
+  @Get(':commentId/isLiked')
+  async isCommentLiked(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Param('commentId', ParseUUIDPipe) commentId: string,
+  ): Promise<void> {
+    try {
+      let result = this.commentService.isCommentLiked(
+        (request.user as any).id,
+        commentId,
+      );
+      successResponse(response, result);
     } catch (error: any) {
       errorResponse(response, error.message);
     }
