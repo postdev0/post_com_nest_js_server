@@ -13,7 +13,11 @@ import {
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { ReplyService } from './reply.service';
 import { Request, Response } from 'express';
-import { errorResponse, successResponse } from '../../base/response';
+import {
+  errorResponse,
+  successPaginatedResponse,
+  successResponse,
+} from '../../base/response';
 import { RoutesConstants } from '../../constants/routes.constant';
 
 @UseGuards(JwtAuthGuard)
@@ -101,13 +105,13 @@ export class ReplyController {
     @Param('commentId', ParseUUIDPipe) commentId: string,
   ): Promise<void> {
     try {
-      let result = await this.replyService.getAllRepliesOfComment(
+      let { result, count } = await this.replyService.getAllRepliesOfComment(
         (request.user as any).id,
         commentId,
         page,
-        pageSize
+        pageSize,
       );
-      successResponse(response, result);
+      successPaginatedResponse(response, result, count, page, pageSize);
     } catch (error: any) {
       errorResponse(response, error.message);
     }

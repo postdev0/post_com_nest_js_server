@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { Comment } from '../comment/entities/comment.entity';
 import { CommentService } from '../comment/comment.service';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class ReplyService {
@@ -16,7 +17,28 @@ export class ReplyService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly commentService: CommentService,
+    private readonly notificationService: NotificationService,
   ) {}
+
+  async sendPushNotification(
+    id: string,
+    notificationType: string,
+    title: string,
+    message: string,
+    data?: any,
+  ) {
+    try {
+      await this.notificationService.sendPush(
+        id,
+        notificationType,
+        title,
+        message,
+        data,
+      );
+    } catch (e) {
+      console.log('Error sending push notification', e);
+    }
+  }
 
   async replyToComment(
     userId: string,
@@ -142,6 +164,6 @@ export class ReplyService {
       }),
     );
 
-    return { result, count };
+    return { result:result[0], count };
   }
 }

@@ -6,9 +6,14 @@ import { ReplyService } from './reply.service';
 import { Comment } from '../comment/entities/comment.entity';
 import { User } from '../user/entities/user.entity';
 import { CommentModule } from '../comment/comment.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Reply, Comment, User]), CommentModule],
+  imports: [
+    TypeOrmModule.forFeature([Reply, Comment, User]),
+    CommentModule,
+    NotificationModule,
+  ],
   controllers: [ReplyController],
   providers: [ReplyService],
   exports: [ReplyService],
