@@ -61,7 +61,10 @@ export class CommentController {
     @Param('id') id: string,
   ): Promise<void> {
     try {
-      let result = await this.commentService.getCommentById(id);
+      let result = await this.commentService.getCommentById(
+        id,
+        (request as any).user?.id,
+      );
       successResponse(response, result);
     } catch (error: any) {
       errorResponse(response, error.message);

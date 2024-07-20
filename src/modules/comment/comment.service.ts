@@ -121,11 +121,65 @@ export class CommentService {
     return result;
   }
 
-  async getCommentById(id: string): Promise<Comment> {
-    return await this.commentRepository.findOne({
+  async getCommentById(id: string, selfId: string): Promise<any> {
+    let result = await this.commentRepository.findOne({
       where: { id },
-      relations: ['user', 'tweet'],
+      relations: [
+        'user',
+        'tweet',
+        'tweet.user',
+        'tweet.interests',
+        'tweet.hashtags',
+        'replies',
+      ],
     });
+    let { selfLiked, selfRetweeted, selfCommented, selfBookmarked } =
+      await this.commonService.likeRetweetCommentBokkmarkProvider(
+        result.tweet,
+        selfId,
+      );
+    let tweetObject = {
+      tweetId: result.tweet.id,
+      tweetText: result.tweet.text,
+      tweetMedia: result.tweet.media,
+      tweetInterests: result.tweet.interests.map((i) => i.name),
+      tweetHashtags: result.tweet.hashtags.map((i) => i.name),
+      tweetCommentsCount: result.tweet.commentsCount,
+      tweetRetweetsCount: result.tweet.retweetsCount,
+      tweetBookmarksCount: result.tweet.bookmarksCount,
+      tweetLikesCount: result.tweet.likesCount,
+      tweetTaggedUsers: result.tweet.taggedUsers,
+      tweetIsRetweeted: result.tweet.isRetweeted,
+      tweetIsEdited: result.tweet.isEdited,
+      tweetIsPublic: result.tweet.isPublic,
+      tweetSelfLiked: selfLiked,
+      tweetSelfRetweeted: selfRetweeted,
+      tweetSelfCommented: selfCommented,
+      tweetSelfBookmarked: selfBookmarked,
+      tweetUserId: result.tweet.user.id,
+      tweetUsername: result.tweet.user.username,
+      tweetFullName: result.tweet.user.fullName,
+      tweetAvatar: result.tweet.user.avatar,
+      tweetCreatedAt: result.tweet.createdAt,
+      tweetModifiedAt: result.tweet.modifiedAt,
+    };
+
+    return {
+      ...tweetObject,
+      commentId: result.id,
+      commentText: result.text,
+      commentMedia: result.media,
+      commentIsEdited: result.isEdited,
+      commentIsLiked: await this.isCommentLiked(selfId, result.id),
+      commentLikesCount: result.likesCount,
+      commentRepliesCount: result.replies.length,
+      commentUserId: result.user.id,
+      commentUsername: result.user.username,
+      commentFullName: result.user.fullName,
+      commentAvatar: result.user.avatar,
+      createdAt: result.createdAt,
+      modifiedAt: result.modifiedAt,
+    };
   }
 
   async update(

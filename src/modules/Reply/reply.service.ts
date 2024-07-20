@@ -93,15 +93,19 @@ export class ReplyService {
   async getAllRepliesOfComment(
     selfId: string,
     commentId: string,
+    page: number = 1,
+    pageSize: number = 10,
   ): Promise<any> {
     let [comment, count]: any = await this.commentRepository.findAndCount({
       where: { id: commentId },
       relations: ['user', 'replies', 'replies.user'],
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
     });
     if (!comment) {
       throw new NotFoundException('Comment not found');
     }
-    // console.log(comment[0].replies);
     let result = await Promise.all(
       comment.map(async (c: any) => {
         return await Promise.all(

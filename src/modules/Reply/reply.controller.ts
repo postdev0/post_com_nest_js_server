@@ -5,6 +5,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -13,6 +14,7 @@ import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { ReplyService } from './reply.service';
 import { Request, Response } from 'express';
 import { errorResponse, successResponse } from '../../base/response';
+import { RoutesConstants } from '../../constants/routes.constant';
 
 @UseGuards(JwtAuthGuard)
 @Controller('replies')
@@ -94,12 +96,16 @@ export class ReplyController {
   async getAllRepliesOfComment(
     @Req() request: Request,
     @Res() response: Response,
+    @Query(RoutesConstants.PAGE) page: number = 1,
+    @Query(RoutesConstants.PAGESIZE) pageSize: number = 10,
     @Param('commentId', ParseUUIDPipe) commentId: string,
   ): Promise<void> {
     try {
       let result = await this.replyService.getAllRepliesOfComment(
         (request.user as any).id,
         commentId,
+        page,
+        pageSize
       );
       successResponse(response, result);
     } catch (error: any) {
