@@ -340,8 +340,8 @@ export class UserController {
         }
         const notification: any = {};
         notification[r.notificationType] = {
-          createdAt: r.additionalData.data.createdAt,
-          modifiedAt: r.additionalData.data.modifiedAt,
+          createdAt: r.createdAt,
+          modifiedAt: r.modifiedAt,
           userAvator: r.additionalData.userAvator,
           title: r.title,
           body: r.body,
