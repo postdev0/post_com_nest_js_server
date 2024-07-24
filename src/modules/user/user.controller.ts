@@ -334,12 +334,25 @@ export class UserController {
         pageSize,
       );
 
-      result.map((r: any) => {
+      let returnObject = result.map((r: any) => {
         if (r.additionalData) {
           r.additionalData = JSON.parse(r.additionalData);
         }
+        const notification: any = {};
+        notification[r.notificationType] = {
+          createdAt: r.additionalData.data.createdAt,
+          modifiedAt: r.additionalData.data.modifiedAt,
+          userAvator: r.additionalData.userAvator,
+          title: r.title,
+          body: r.body,
+          created_by: r.created_by,
+          id: r.additionalData?.data?.id || r.additionalData?.data,
+          media: r.additionalData?.data?.media || '',
+        };
+        return { notificationType: r.notificationType, ...notification };
       });
-      successPaginatedResponse(response, result, count, page, pageSize);
+
+      successPaginatedResponse(response, returnObject, count, page, pageSize);
     } catch (error: any) {
       console.log(error);
       errorResponse(response, error.message);

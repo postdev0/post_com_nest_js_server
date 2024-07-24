@@ -42,6 +42,7 @@ export class CommentService {
       );
     } catch (e) {
       console.log('Error sending push notification', e);
+      throw e;
     }
   }
 
@@ -62,20 +63,13 @@ export class CommentService {
     }
     let tweet = await this.tweetRepository.findOne({
       where: { id: tweetId, deleteFlag: false },
-      relations: ['user', 'interests', 'hashtags'],
+      relations: ['user'],
     });
 
-    let { selfLiked, selfRetweeted, selfCommented, selfBookmarked } =
-      await this.commonService.likeRetweetCommentBokkmarkProvider(
-        tweet,
-        tweet.user.id,
-      );
     let tweetObject = {
       id: tweet.id,
       text: tweet.text,
       media: tweet.media,
-      interests: tweet.interests.map((i) => i.name),
-      hashtags: tweet.hashtags.map((i) => i.name),
       commentsCount: tweet.commentsCount,
       retweetsCount: tweet.retweetsCount,
       bookmarksCount: tweet.bookmarksCount,
@@ -84,10 +78,6 @@ export class CommentService {
       isRetweeted: tweet.isRetweeted,
       isEdited: tweet.isEdited,
       isPublic: tweet.isPublic,
-      selfLiked,
-      selfRetweeted,
-      selfCommented,
-      selfBookmarked,
       userId: tweet.user.id,
       username: tweet.user.username,
       fullName: tweet.user.fullName,
@@ -106,15 +96,14 @@ export class CommentService {
     let result = await this.commentRepository.save(comment);
     if (result) {
       let notificationData = {
-        notificationType: 'comment',
         userAvator: user.avatar,
         data: tweetObject,
       };
       this.sendPushNotification(
         tweet.user.id,
-        'comment',
+        'tweet_comment',
         'Comment update',
-        `@${user.username} has commented on your tweet`,
+        `@${user.username} has commented on your tweet "${tweetObject.text}"`,
         { notificationData: JSON.stringify(notificationData) },
       );
     }
@@ -258,7 +247,7 @@ export class CommentService {
   async likeComment(userId: string, commentId: string): Promise<Comment> {
     const comment = await this.commentRepository.findOne({
       where: { id: commentId },
-      relations: ['likedBy'],
+      relations: ['likedBy', 'user', 'tweet'],
     });
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
@@ -266,11 +255,47 @@ export class CommentService {
       throw new NotFoundException('Comment or User not found');
     }
 
+    let result:any;
     if (!comment.likedBy.some((likedUser) => likedUser.id === userId)) {
       comment.likedBy.push(user);
       comment.likesCount += 1;
-      await this.commentRepository.save(comment);
+      result = await this.commentRepository.save(comment);
     }
+
+    let tweetObject = {
+      id: comment.id,
+      text: comment.tweet.text,
+      media: comment.tweet.media,
+      commentsCount: comment.tweet.commentsCount,
+      retweetsCount: comment.tweet.retweetsCount,
+      bookmarksCount: comment.tweet.bookmarksCount,
+      likesCount: comment.tweet.likesCount,
+      taggedUsers: comment.tweet.taggedUsers,
+      isRetweeted: comment.tweet.isRetweeted,
+      isEdited: comment.tweet.isEdited,
+      isPublic: comment.tweet.isPublic,
+      userId: comment.tweet.user.id,
+      username: comment.tweet.user.username,
+      fullName: comment.tweet.user.fullName,
+      avatar: comment.tweet.user.avatar,
+      createdAt: comment.tweet.createdAt,
+      modifiedAt: comment.tweet.modifiedAt,
+    };
+    
+    if(result){
+      let notificationData = {
+        userAvator: user.avatar,
+        data: tweetObject,
+      };
+      this.sendPushNotification(
+        comment.user.id,
+        'comment_like',
+        'Comment update',
+        `@${user.username} has like on your comment "${comment.text}"`,
+        { notificationData: JSON.stringify(notificationData) },
+      );
+    }
+
 
     return comment;
   }

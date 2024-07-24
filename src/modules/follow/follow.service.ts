@@ -33,6 +33,7 @@ export class FollowService {
       );
     } catch (e) {
       console.log('Error sending push notification', e);
+      throw e;
     }
   }
 

@@ -38,6 +38,7 @@ export class LikeService {
       );
     } catch (e) {
       console.log('Error sending push notification', e);
+      throw e;
     }
   }
 
@@ -99,16 +100,15 @@ export class LikeService {
       foundedTweet.likes.push(newLike);
       await this.tweetRepository.save(foundedTweet);
       let notificationData = {
-        notificationType: 'like',
         userAvator: user.avatar,
         data: tweetObject,
       };
 
       this.sendPushNotification(
         foundedTweet.user.id,
-        'like',
+        'tweet_like',
         'Like update',
-        `@${user.username} has liked on your tweet`,
+        `@${user.username} has liked on your tweet "${tweetObject.text}"`,
         { notificationData: JSON.stringify(notificationData) },
       );
       return { like: true };

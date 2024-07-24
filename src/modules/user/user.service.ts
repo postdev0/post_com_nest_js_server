@@ -53,14 +53,22 @@ export class UserService {
 
   async sendPushNotification(
     id: string,
+    notificationType: string,
     title: string,
     message: string,
     data?: any,
   ) {
     try {
-      await this.notificationService.sendPush(id, title, message, data);
+      await this.notificationService.sendPush(
+        id,
+        notificationType,
+        title,
+        message,
+        data,
+      );
     } catch (e) {
       console.log('Error sending push notification', e);
+      throw e;
     }
   }
 
@@ -227,6 +235,7 @@ export class UserService {
     if (result) {
       this.sendPushNotification(
         id,
+        'update',
         'Profile update',
         'Your Profile have been updated successfully',
       );
@@ -250,6 +259,7 @@ export class UserService {
     if (result) {
       this.sendPushNotification(
         id,
+        'update',
         'Password setting',
         'Your Password have been set successfully',
       );
@@ -295,6 +305,7 @@ export class UserService {
     if (result) {
       this.sendPushNotification(
         id,
+        'update',
         'Password change',
         'Your Password have been updated successfully',
       );
@@ -348,7 +359,10 @@ export class UserService {
           tweet.user.id,
           selfId,
         ),
-        isOwnerBlocked: await this.blockService.isBlocked(tweet.user.id, selfId),
+        isOwnerBlocked: await this.blockService.isBlocked(
+          tweet.user.id,
+          selfId,
+        ),
         userId: tweet.user.id,
         username: tweet.user.username,
         fullName: tweet.user.fullName,
@@ -406,7 +420,10 @@ export class UserService {
             l.tweet.user.id,
             selfId,
           ),
-          isOwnerBlocked: await this.blockService.isBlocked(l.tweet.user.id, selfId),
+          isOwnerBlocked: await this.blockService.isBlocked(
+            l.tweet.user.id,
+            selfId,
+          ),
           userId: l.tweet.user.id,
           username: l.tweet.user.username,
           fullName: l.tweet.user.fullName,
@@ -465,7 +482,10 @@ export class UserService {
             r.tweet.user.id,
             selfId,
           ),
-          isOwnerBlocked: await this.blockService.isBlocked(r.tweet.user.id, selfId),
+          isOwnerBlocked: await this.blockService.isBlocked(
+            r.tweet.user.id,
+            selfId,
+          ),
           userId: r.tweet.user.id,
           username: r.tweet.user.username,
           fullName: r.tweet.user.fullName,
@@ -525,7 +545,10 @@ export class UserService {
             b.tweet.user.id,
             selfId,
           ),
-          isOwnerBlocked: await this.blockService.isBlocked(b.tweet.user.id, selfId),
+          isOwnerBlocked: await this.blockService.isBlocked(
+            b.tweet.user.id,
+            selfId,
+          ),
           userId: b.tweet.user.id,
           username: b.tweet.user.username,
           fullName: b.tweet.user.fullName,
@@ -591,7 +614,10 @@ export class UserService {
             c.tweet.user.id,
             selfId,
           ),
-          tweet_isOwnerBlocked: await this.blockService.isBlocked(c.tweet.user.id, selfId),
+          tweet_isOwnerBlocked: await this.blockService.isBlocked(
+            c.tweet.user.id,
+            selfId,
+          ),
           tweet_userId: c.tweet.user.id,
           tweet_username: c.tweet.user.username,
           tweet_fullName: c.tweet.user.fullName,
@@ -638,7 +664,7 @@ export class UserService {
 
   getPushNotifications = async (
     id: string,
-    notificationType:string,
+    notificationType: string,
     page: number = 1,
     pageSize: number = 10,
   ): Promise<any> => {

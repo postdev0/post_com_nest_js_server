@@ -47,6 +47,7 @@ export class ReplyService {
   ): Promise<Reply> {
     const comment = await this.commentRepository.findOne({
       where: { id: commentId },
+      relations: ['tweet', 'tweet.user'],
     });
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
@@ -58,14 +59,49 @@ export class ReplyService {
     reply.user = user;
     reply.comment = comment;
     reply.text = replyText;
-    await this.replyRepository.save(reply);
+    let result = await this.replyRepository.save(reply);
+
+    let tweetObject = {
+      id: reply.id,
+      text: reply.comment.tweet.text,
+      media: reply.comment.tweet.media,
+      commentsCount: reply.comment.tweet.commentsCount,
+      retweetsCount: reply.comment.tweet.retweetsCount,
+      bookmarksCount: reply.comment.tweet.bookmarksCount,
+      likesCount: reply.comment.tweet.likesCount,
+      taggedUsers: reply.comment.tweet.taggedUsers,
+      isRetweeted: reply.comment.tweet.isRetweeted,
+      isEdited: reply.comment.tweet.isEdited,
+      isPublic: reply.comment.tweet.isPublic,
+      userId: reply.comment.tweet.user.id,
+      username: reply.comment.tweet.user.username,
+      fullName: reply.comment.tweet.user.fullName,
+      avatar: reply.comment.tweet.user.avatar,
+      createdAt: reply.comment.tweet.createdAt,
+      modifiedAt: reply.comment.tweet.modifiedAt,
+    };
+
+    if (result) {
+      let notificationData = {
+        userAvator: user.avatar,
+        data: tweetObject,
+      };
+      this.sendPushNotification(
+        reply.comment.user.id,
+        'comment_reply',
+        'Reply update',
+        `@${user.username} has replied on your comment "${reply.comment.text}"`,
+        { notificationData: JSON.stringify(notificationData) },
+      );
+    }
+
     return reply;
   }
 
   async likeReply(userId: string, replyId: string): Promise<Reply> {
     const reply = await this.replyRepository.findOne({
       where: { id: replyId },
-      relations: ['likedBy'],
+      relations: ['likedBy', 'comment', 'comment.tweet', 'comment.tweet.user'],
     });
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
@@ -73,10 +109,45 @@ export class ReplyService {
       throw new NotFoundException('Reply or User not found');
     }
 
+    let result: any;
     if (!reply.likedBy.some((likedUser) => likedUser.id === userId)) {
       reply.likedBy.push(user);
       reply.likesCount += 1;
-      await this.replyRepository.save(reply);
+      result = await this.replyRepository.save(reply);
+    }
+
+    let tweetObject = {
+      id: reply.id,
+      text: reply.comment.tweet.text,
+      media: reply.comment.tweet.media,
+      commentsCount: reply.comment.tweet.commentsCount,
+      retweetsCount: reply.comment.tweet.retweetsCount,
+      bookmarksCount: reply.comment.tweet.bookmarksCount,
+      likesCount: reply.comment.tweet.likesCount,
+      taggedUsers: reply.comment.tweet.taggedUsers,
+      isRetweeted: reply.comment.tweet.isRetweeted,
+      isEdited: reply.comment.tweet.isEdited,
+      isPublic: reply.comment.tweet.isPublic,
+      userId: reply.comment.tweet.user.id,
+      username: reply.comment.tweet.user.username,
+      fullName: reply.comment.tweet.user.fullName,
+      avatar: reply.comment.tweet.user.avatar,
+      createdAt: reply.comment.tweet.createdAt,
+      modifiedAt: reply.comment.tweet.modifiedAt,
+    };
+
+    if (result) {
+      let notificationData = {
+        userAvator: user.avatar,
+        data: tweetObject,
+      };
+      this.sendPushNotification(
+        reply.comment.user.id,
+        'reply_like',
+        'Like update',
+        `@${user.username} has like on your reply of comment "${reply.comment.text}"`,
+        { notificationData: JSON.stringify(notificationData) },
+      );
     }
 
     return reply;
@@ -164,6 +235,6 @@ export class ReplyService {
       }),
     );
 
-    return { result:result[0], count };
+    return { result: result[0], count };
   }
 }
