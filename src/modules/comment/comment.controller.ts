@@ -49,6 +49,7 @@ export class CommentController {
       );
       successResponse(response, result);
     } catch (error: any) {
+      console.log(error)
       errorResponse(response, error.message);
     }
   }

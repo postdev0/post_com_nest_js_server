@@ -40,6 +40,7 @@ export class ReplyController {
       );
       successResponse(response, result);
     } catch (error: any) {
+      console.log(error)
       errorResponse(response, error.message);
     }
   }

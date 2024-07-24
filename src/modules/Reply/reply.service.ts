@@ -47,7 +47,7 @@ export class ReplyService {
   ): Promise<Reply> {
     const comment = await this.commentRepository.findOne({
       where: { id: commentId },
-      relations: ['tweet', 'tweet.user'],
+      relations: ['user', 'tweet', 'tweet.user'],
     });
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
@@ -101,7 +101,13 @@ export class ReplyService {
   async likeReply(userId: string, replyId: string): Promise<Reply> {
     const reply = await this.replyRepository.findOne({
       where: { id: replyId },
-      relations: ['likedBy', 'comment', 'comment.tweet', 'comment.tweet.user'],
+      relations: [
+        'likedBy',
+        'comment',
+        'comment.user',
+        'comment.tweet',
+        'comment.tweet.user',
+      ],
     });
     const user = await this.userRepository.findOne({ where: { id: userId } });
 

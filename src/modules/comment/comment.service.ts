@@ -65,6 +65,9 @@ export class CommentService {
       where: { id: tweetId, deleteFlag: false },
       relations: ['user'],
     });
+    if (!tweet) {
+      throw new NotFoundException('Tweet not found');
+    }
 
     let tweetObject = {
       id: tweet.id,
@@ -247,7 +250,7 @@ export class CommentService {
   async likeComment(userId: string, commentId: string): Promise<Comment> {
     const comment = await this.commentRepository.findOne({
       where: { id: commentId },
-      relations: ['likedBy', 'user', 'tweet'],
+      relations: ['likedBy', 'user', 'tweet', 'tweet.user'],
     });
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
@@ -255,7 +258,7 @@ export class CommentService {
       throw new NotFoundException('Comment or User not found');
     }
 
-    let result:any;
+    let result: any;
     if (!comment.likedBy.some((likedUser) => likedUser.id === userId)) {
       comment.likedBy.push(user);
       comment.likesCount += 1;
@@ -281,8 +284,8 @@ export class CommentService {
       createdAt: comment.tweet.createdAt,
       modifiedAt: comment.tweet.modifiedAt,
     };
-    
-    if(result){
+
+    if (result) {
       let notificationData = {
         userAvator: user.avatar,
         data: tweetObject,
@@ -295,7 +298,6 @@ export class CommentService {
         { notificationData: JSON.stringify(notificationData) },
       );
     }
-
 
     return comment;
   }
