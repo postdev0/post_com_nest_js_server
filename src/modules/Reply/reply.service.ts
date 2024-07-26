@@ -18,7 +18,7 @@ export class ReplyService {
     private readonly userRepository: Repository<User>,
     private readonly commentService: CommentService,
     private readonly notificationService: NotificationService,
-  ) {}
+  ) { }
 
   async sendPushNotification(
     id: string,
@@ -153,15 +153,28 @@ export class ReplyService {
     return reply.likedBy.some((likedUser) => likedUser.id === userId);
   }
 
-  async getById(userId: string, replyId: string): Promise<any> {
+  async getById(selfId: string, replyId: string): Promise<any> {
     const reply = await this.replyRepository.findOne({
       where: { id: replyId },
-      relations: ['likedBy', 'comment', 'user', 'comment.tweet'],
+      relations: ['likedBy', 'comment', 'user'],
     });
     if (!reply) {
       throw new NotFoundException('Reply not found');
     }
-    return reply;
+    let replyObject = {
+      id: reply.id,
+      text: reply.text,
+      media: reply.media,
+      isEdited: reply.isEdited,
+      likesCount: reply.likesCount,
+      isLiked: await this.isReplyLiked(selfId, reply.id),
+      userId: reply.user.id,
+      username: reply.user.username,
+      fullName: reply.user.fullName,
+      avatar: reply.user.avatar,
+    }
+    let result = await this.commentService.getCommentById(reply.comment.id, selfId);
+    return { reply: replyObject, ...result };
   }
 
   async getAllRepliesOfComment(
