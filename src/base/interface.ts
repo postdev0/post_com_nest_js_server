@@ -73,8 +73,8 @@ export interface TweetsList {
   selfRetweeted: boolean;
   selfCommented: boolean;
   selfBookmarked: boolean;
-  isFollowingToOwner: boolean;
-  isOwnerBlocked: boolean;
+  isFollowingToOwner?: boolean;
+  isOwnerBlocked?: boolean;
   userId: string;
   username: string;
   fullName: string;
@@ -108,6 +108,7 @@ export interface CommentsList {
   isEdited: boolean;
   isLiked: boolean;
   likesCount: number;
+  repliesCount: number;
   userId: string;
   username: string;
   fullName: string;

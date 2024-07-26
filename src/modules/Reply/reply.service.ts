@@ -61,30 +61,12 @@ export class ReplyService {
     reply.text = replyText;
     let result = await this.replyRepository.save(reply);
 
-    let tweetObject = {
-      id: reply.id,
-      text: reply.comment.tweet.text,
-      media: reply.comment.tweet.media,
-      commentsCount: reply.comment.tweet.commentsCount,
-      retweetsCount: reply.comment.tweet.retweetsCount,
-      bookmarksCount: reply.comment.tweet.bookmarksCount,
-      likesCount: reply.comment.tweet.likesCount,
-      taggedUsers: reply.comment.tweet.taggedUsers,
-      isRetweeted: reply.comment.tweet.isRetweeted,
-      isEdited: reply.comment.tweet.isEdited,
-      isPublic: reply.comment.tweet.isPublic,
-      userId: reply.comment.tweet.user.id,
-      username: reply.comment.tweet.user.username,
-      fullName: reply.comment.tweet.user.fullName,
-      avatar: reply.comment.tweet.user.avatar,
-      createdAt: reply.comment.tweet.createdAt,
-      modifiedAt: reply.comment.tweet.modifiedAt,
-    };
-
     if (result) {
       let notificationData = {
         userAvator: user.avatar,
-        data: tweetObject,
+        id: reply.id,
+        text: reply.text,
+        media: reply.comment.tweet.media,
       };
       this.sendPushNotification(
         reply.comment.user.id,
@@ -122,30 +104,12 @@ export class ReplyService {
       result = await this.replyRepository.save(reply);
     }
 
-    let tweetObject = {
-      id: reply.id,
-      text: reply.comment.tweet.text,
-      media: reply.comment.tweet.media,
-      commentsCount: reply.comment.tweet.commentsCount,
-      retweetsCount: reply.comment.tweet.retweetsCount,
-      bookmarksCount: reply.comment.tweet.bookmarksCount,
-      likesCount: reply.comment.tweet.likesCount,
-      taggedUsers: reply.comment.tweet.taggedUsers,
-      isRetweeted: reply.comment.tweet.isRetweeted,
-      isEdited: reply.comment.tweet.isEdited,
-      isPublic: reply.comment.tweet.isPublic,
-      userId: reply.comment.tweet.user.id,
-      username: reply.comment.tweet.user.username,
-      fullName: reply.comment.tweet.user.fullName,
-      avatar: reply.comment.tweet.user.avatar,
-      createdAt: reply.comment.tweet.createdAt,
-      modifiedAt: reply.comment.tweet.modifiedAt,
-    };
-
     if (result) {
       let notificationData = {
         userAvator: user.avatar,
-        data: tweetObject,
+        id: reply.id,
+        text: reply.text,
+        media: reply.comment.tweet.media,
       };
       this.sendPushNotification(
         reply.comment.user.id,
@@ -187,6 +151,17 @@ export class ReplyService {
       throw new NotFoundException('Reply not found');
     }
     return reply.likedBy.some((likedUser) => likedUser.id === userId);
+  }
+
+  async getById(userId: string, replyId: string): Promise<any> {
+    const reply = await this.replyRepository.findOne({
+      where: { id: replyId },
+      relations: ['likedBy', 'comment', 'user', 'comment.tweet'],
+    });
+    if (!reply) {
+      throw new NotFoundException('Reply not found');
+    }
+    return reply;
   }
 
   async getAllRepliesOfComment(

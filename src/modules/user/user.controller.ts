@@ -346,8 +346,9 @@ export class UserController {
           title: r.title,
           body: r.body,
           created_by: r.created_by,
-          id: r.additionalData?.data?.id || r.additionalData?.data,
-          media: r.additionalData?.data?.media || '',
+          id: r.additionalData?.id,
+          text: r.additionalData?.text || '',
+          media: r.additionalData?.media || '',
         };
         return { notificationType: r.notificationType, ...notification };
       });

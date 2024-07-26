@@ -40,7 +40,7 @@ export class ReplyController {
       );
       successResponse(response, result);
     } catch (error: any) {
-      console.log(error)
+      console.log(error);
       errorResponse(response, error.message);
     }
   }
@@ -97,7 +97,7 @@ export class ReplyController {
     }
   }
 
-  @Get(':commentId')
+  @Get('comment/:commentId')
   async getAllRepliesOfComment(
     @Req() request: Request,
     @Res() response: Response,
@@ -113,6 +113,23 @@ export class ReplyController {
         pageSize,
       );
       successPaginatedResponse(response, result, count, page, pageSize);
+    } catch (error: any) {
+      errorResponse(response, error.message);
+    }
+  }
+
+  @Get(':replyId')
+  async getById(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Param('replyId', ParseUUIDPipe) replyId: string,
+  ): Promise<void> {
+    try {
+      let result = await this.replyService.getById(
+        (request.user as any).id,
+        replyId,
+      );
+      successResponse(response, result);
     } catch (error: any) {
       errorResponse(response, error.message);
     }

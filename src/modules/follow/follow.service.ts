@@ -76,7 +76,8 @@ export class FollowService {
     let notificationData = {
       notificationType: 'follow',
       userAvator: userFollower.avatar,
-      data: followerId,
+      id: followerId,
+      media: '',
     };
     this.sendPushNotification(
       followingId,

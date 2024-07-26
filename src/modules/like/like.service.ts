@@ -48,36 +48,36 @@ export class LikeService {
       relations: ['likes', 'user', 'interests', 'hashtags'],
     });
     if (!foundedTweet) throw new NotFoundException('Tweet not found');
-    let { selfLiked, selfRetweeted, selfCommented, selfBookmarked } =
-      await this.commonService.likeRetweetCommentBokkmarkProvider(
-        foundedTweet,
-        foundedTweet.user.id,
-      );
-    let tweetObject = {
-      id: foundedTweet.id,
-      text: foundedTweet.text,
-      media: foundedTweet.media,
-      interests: foundedTweet.interests.map((i) => i.name),
-      hashtags: foundedTweet.hashtags.map((i) => i.name),
-      commentsCount: foundedTweet.commentsCount,
-      retweetsCount: foundedTweet.retweetsCount,
-      bookmarksCount: foundedTweet.bookmarksCount,
-      likesCount: foundedTweet.likesCount,
-      taggedUsers: foundedTweet.taggedUsers,
-      isRetweeted: foundedTweet.isRetweeted,
-      isEdited: foundedTweet.isEdited,
-      isPublic: foundedTweet.isPublic,
-      selfLiked,
-      selfRetweeted,
-      selfCommented,
-      selfBookmarked,
-      userId: foundedTweet.user.id,
-      username: foundedTweet.user.username,
-      fullName: foundedTweet.user.fullName,
-      avatar: foundedTweet.user.avatar,
-      createdAt: foundedTweet.createdAt,
-      modifiedAt: foundedTweet.modifiedAt,
-    };
+    // let { selfLiked, selfRetweeted, selfCommented, selfBookmarked } =
+    //   await this.commonService.likeRetweetCommentBokkmarkProvider(
+    //     foundedTweet,
+    //     foundedTweet.user.id,
+    //   );
+    // let tweetObject = {F
+    //   id: foundedTweet.id,
+    //   text: foundedTweet.text,
+    //   media: foundedTweet.media,
+    //   interests: foundedTweet.interests.map((i) => i.name),
+    //   hashtags: foundedTweet.hashtags.map((i) => i.name),
+    //   commentsCount: foundedTweet.commentsCount,
+    //   retweetsCount: foundedTweet.retweetsCount,
+    //   bookmarksCount: foundedTweet.bookmarksCount,
+    //   likesCount: foundedTweet.likesCount,
+    //   taggedUsers: foundedTweet.taggedUsers,
+    //   isRetweeted: foundedTweet.isRetweeted,
+    //   isEdited: foundedTweet.isEdited,
+    //   isPublic: foundedTweet.isPublic,
+    //   selfLiked,
+    //   selfRetweeted,
+    //   selfCommented,
+    //   selfBookmarked,
+    //   userId: foundedTweet.user.id,
+    //   username: foundedTweet.user.username,
+    //   fullName: foundedTweet.user.fullName,
+    //   avatar: foundedTweet.user.avatar,
+    //   createdAt: foundedTweet.createdAt,
+    //   modifiedAt: foundedTweet.modifiedAt,
+    // };
     const foundedLike: Like | null = await this.likeRepository.findOne({
       where: { user: { id: user.id }, tweet: { id: dto.tweetId } },
     });
@@ -100,15 +100,17 @@ export class LikeService {
       foundedTweet.likes.push(newLike);
       await this.tweetRepository.save(foundedTweet);
       let notificationData = {
-        userAvator: user.avatar,
-        data: tweetObject,
+        userAvator: user?.avatar,
+        id: foundedTweet?.id,
+        text: foundedTweet?.text || '',
+        media: foundedTweet?.media || '',
       };
 
       this.sendPushNotification(
         foundedTweet.user.id,
         'tweet_like',
         'Like update',
-        `@${user.username} has liked on your tweet "${tweetObject.text}"`,
+        `@${user.username} has liked on your tweet`,
         { notificationData: JSON.stringify(notificationData) },
       );
       return { like: true };

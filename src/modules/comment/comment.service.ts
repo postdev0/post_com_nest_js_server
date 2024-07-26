@@ -6,7 +6,7 @@ import { UpdateCommentDto } from './dto/update.dto';
 import { Comment } from './entities/comment.entity';
 import { S3Service } from '../s3/s3.service';
 import { Tweet } from '../tweet/entities/tweet.entity';
-import { CommentsList } from '../../base/interface';
+import { CommentsList, TweetsList } from '../../base/interface';
 import { NotificationService } from '../notification/notification.service';
 import { CommonService } from '../common/commonService';
 import { User } from '../user/entities/user.entity';
@@ -69,25 +69,6 @@ export class CommentService {
       throw new NotFoundException('Tweet not found');
     }
 
-    let tweetObject = {
-      id: tweet.id,
-      text: tweet.text,
-      media: tweet.media,
-      commentsCount: tweet.commentsCount,
-      retweetsCount: tweet.retweetsCount,
-      bookmarksCount: tweet.bookmarksCount,
-      likesCount: tweet.likesCount,
-      taggedUsers: tweet.taggedUsers,
-      isRetweeted: tweet.isRetweeted,
-      isEdited: tweet.isEdited,
-      isPublic: tweet.isPublic,
-      userId: tweet.user.id,
-      username: tweet.user.username,
-      fullName: tweet.user.fullName,
-      avatar: tweet.user.avatar,
-      createdAt: tweet.createdAt,
-      modifiedAt: tweet.modifiedAt,
-    };
     const comment = this.commentRepository.create({
       media: commentMedia,
       ...createCommentDto,
@@ -99,14 +80,16 @@ export class CommentService {
     let result = await this.commentRepository.save(comment);
     if (result) {
       let notificationData = {
-        userAvator: user.avatar,
-        data: tweetObject,
+        userAvator: user?.avatar,
+        id: comment?.id,
+        text: comment?.text || '',
+        media: comment?.tweet?.media || '',
       };
       this.sendPushNotification(
         tweet.user.id,
         'tweet_comment',
         'Comment update',
-        `@${user.username} has commented on your tweet "${tweetObject.text}"`,
+        `@${user.username} has commented on your tweet`,
         { notificationData: JSON.stringify(notificationData) },
       );
     }
@@ -130,48 +113,50 @@ export class CommentService {
         result.tweet,
         selfId,
       );
-    let tweetObject = {
-      tweetId: result.tweet.id,
-      tweetText: result.tweet.text,
-      tweetMedia: result.tweet.media,
-      tweetInterests: result.tweet.interests.map((i) => i.name),
-      tweetHashtags: result.tweet.hashtags.map((i) => i.name),
-      tweetCommentsCount: result.tweet.commentsCount,
-      tweetRetweetsCount: result.tweet.retweetsCount,
-      tweetBookmarksCount: result.tweet.bookmarksCount,
-      tweetLikesCount: result.tweet.likesCount,
-      tweetTaggedUsers: result.tweet.taggedUsers,
-      tweetIsRetweeted: result.tweet.isRetweeted,
-      tweetIsEdited: result.tweet.isEdited,
-      tweetIsPublic: result.tweet.isPublic,
-      tweetSelfLiked: selfLiked,
-      tweetSelfRetweeted: selfRetweeted,
-      tweetSelfCommented: selfCommented,
-      tweetSelfBookmarked: selfBookmarked,
-      tweetUserId: result.tweet.user.id,
-      tweetUsername: result.tweet.user.username,
-      tweetFullName: result.tweet.user.fullName,
-      tweetAvatar: result.tweet.user.avatar,
-      tweetCreatedAt: result.tweet.createdAt,
-      tweetModifiedAt: result.tweet.modifiedAt,
+
+    let tweet: TweetsList = {
+      id: result.tweet.id,
+      text: result.tweet.text,
+      media: result.tweet.media,
+      interests: result.tweet.interests.map((i) => i.name),
+      hashtags: result.tweet.hashtags.map((i) => i.name),
+      commentsCount: result.tweet.commentsCount,
+      retweetsCount: result.tweet.retweetsCount,
+      likesCount: result.tweet.bookmarksCount,
+      bookmarksCount: result.tweet.likesCount,
+      taggedUsers: result.tweet.taggedUsers,
+      isRetweeted: result.tweet.isRetweeted,
+      isEdited: result.tweet.isEdited,
+      isPublic: result.tweet.isPublic,
+      selfLiked,
+      selfRetweeted,
+      selfCommented,
+      selfBookmarked,
+      userId: result.tweet.user.id,
+      username: result.tweet.user.username,
+      fullName: result.tweet.user.fullName,
+      avatar: result.tweet.user.avatar,
+      createdAt: result.tweet.createdAt,
+      modifiedAt: result.tweet.modifiedAt,
     };
 
-    return {
-      ...tweetObject,
-      commentId: result.id,
-      commentText: result.text,
-      commentMedia: result.media,
-      commentIsEdited: result.isEdited,
-      commentIsLiked: await this.isCommentLiked(selfId, result.id),
-      commentLikesCount: result.likesCount,
-      commentRepliesCount: result.replies.length,
-      commentUserId: result.user.id,
-      commentUsername: result.user.username,
-      commentFullName: result.user.fullName,
-      commentAvatar: result.user.avatar,
+    let comment: CommentsList = {
+      id: result.id,
+      text: result.text,
+      media: result.media,
+      isEdited: result.isEdited,
+      isLiked: await this.isCommentLiked(selfId, result.id),
+      likesCount: result.likesCount,
+      repliesCount: result.replies.length,
+      userId: result.user.id,
+      username: result.user.username,
+      fullName: result.user.fullName,
+      avatar: result.user.avatar,
       createdAt: result.createdAt,
       modifiedAt: result.modifiedAt,
     };
+
+    return { comment, tweet };
   }
 
   async update(
@@ -210,7 +195,7 @@ export class CommentService {
   ): Promise<any> {
     let [comment, count] = await this.commentRepository.findAndCount({
       where: { tweet: { id: tweetId } },
-      relations: ['user'],
+      relations: ['user', 'replies'],
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
@@ -224,6 +209,7 @@ export class CommentService {
           isEdited: c.isEdited,
           isLiked: await this.isCommentLiked(selfId, c.id),
           likesCount: c.likesCount,
+          repliesCount: c.replies.length,
           userId: c.user.id,
           username: c.user.username,
           fullName: c.user.fullName,
@@ -265,30 +251,12 @@ export class CommentService {
       result = await this.commentRepository.save(comment);
     }
 
-    let tweetObject = {
-      id: comment.id,
-      text: comment.tweet.text,
-      media: comment.tweet.media,
-      commentsCount: comment.tweet.commentsCount,
-      retweetsCount: comment.tweet.retweetsCount,
-      bookmarksCount: comment.tweet.bookmarksCount,
-      likesCount: comment.tweet.likesCount,
-      taggedUsers: comment.tweet.taggedUsers,
-      isRetweeted: comment.tweet.isRetweeted,
-      isEdited: comment.tweet.isEdited,
-      isPublic: comment.tweet.isPublic,
-      userId: comment.tweet.user.id,
-      username: comment.tweet.user.username,
-      fullName: comment.tweet.user.fullName,
-      avatar: comment.tweet.user.avatar,
-      createdAt: comment.tweet.createdAt,
-      modifiedAt: comment.tweet.modifiedAt,
-    };
-
     if (result) {
       let notificationData = {
-        userAvator: user.avatar,
-        data: tweetObject,
+        userAvator: user?.avatar,
+        id: comment?.id,
+        text: comment?.text || '',
+        media: comment?.tweet?.media || '',
       };
       this.sendPushNotification(
         comment.user.id,
