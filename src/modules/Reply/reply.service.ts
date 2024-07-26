@@ -167,6 +167,8 @@ export class ReplyService {
       media: reply.media,
       isEdited: reply.isEdited,
       likesCount: reply.likesCount,
+      createdAt: reply.createdAt,
+      modifiedAt: reply.modifiedAt,
       isLiked: await this.isReplyLiked(selfId, reply.id),
       userId: reply.user.id,
       username: reply.user.username,
